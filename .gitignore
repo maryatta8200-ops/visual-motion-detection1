@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Virtual environments (recreate with scripts/setup_env.sh)
+.venv/
+venv/
+
+# Research runtime artifacts — never commit raw data or bulk outputs
+logs/*
+!logs/.gitkeep
+out/
+tmp/
+*.npz
+*.mp4
+*.avi
+*.mkv
+!tests/data/**
+
+# OS / editor
+.DS_Store
