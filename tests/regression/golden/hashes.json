@@ -1,0 +1,23 @@
+{
+  "gradient_gray_sha256": "ca3c11a789afde83db0cb5a03873415cee619c0b6b66ab5d35d6d15b44b2baa0",
+  "note": "store hash is environment-stable (zlib version pinned via requirements.txt)",
+  "quantized_ramp_sha256": {
+    "128": "41b5f7a8f09fa1d764916948048d1d4e62468e92f11d034532a9fbf525246858",
+    "16": "91cb9071ef703336dce922970e53788fa6cfd2ab277d142112218aa5054683aa",
+    "256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880",
+    "32": "1ca09b0174f3ed04cb358fe9a7bc504cf14baa6a44aca20d467711562ed81e58",
+    "64": "13dee16eae256ce008e94a40640bbbd013ddb5e17233f3a3e38b6c61566246da",
+    "8": "db05e55d6193247cd749ccc4bcecd7efa1aaeda3e11093a042c9f97957bc16d7"
+  },
+  "reference_vectors": {
+    "000000": 0.0,
+    "0000ff": 0.114,
+    "00ff00": 0.587,
+    "313131": 0.19215686274509802,
+    "ff0000": 0.299,
+    "ffff00": 0.8859999999999999,
+    "ffffff": 0.9999999999999999
+  },
+  "spec_version": "1.0.0",
+  "store_npz_sha256": "bfcd849216c846732efb22eaa3e45255a77e6ce564f45e92ff60e1aab8be4fa8"
+}

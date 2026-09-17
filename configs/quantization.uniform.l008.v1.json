@@ -1,0 +1,24 @@
+{
+  "config_version": "1.0.0",
+  "input_domain": {
+    "alpha_policy": "drop",
+    "channel_order": "RGB",
+    "float_range_policy": "strict",
+    "luma_standard": "bt601",
+    "non_finite_policy": "strict",
+    "normalization": "dtype_max"
+  },
+  "quantization": {
+    "boundary_rule": "floor_right_open",
+    "implementation": "reference",
+    "levels": 8,
+    "scope": "global_fixed",
+    "strategy": "uniform"
+  },
+  "schema": "vie.pipeline-config/1",
+  "seed": 0,
+  "serialization": {
+    "deterministic": true,
+    "format": "vie-framestore/1"
+  }
+}

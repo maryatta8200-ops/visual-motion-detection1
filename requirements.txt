@@ -1,0 +1,7 @@
+# Pinned environment used for Phase 0/1 acceptance runs (see docs/phase-1/phase1_report.md).
+# Recreate: scripts/setup_env.sh
+numpy==2.4.6
+pillow==12.3.0
+jsonschema==4.26.0
+pytest==9.1.1
+opencv-python-headless==5.0.0.93

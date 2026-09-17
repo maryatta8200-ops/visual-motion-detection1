@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maryatta8200-ops/visual-motion-detection1/schemas/framestore_manifest.schema.json",
+  "title": "VIE frame-store manifest",
+  "description": "vie.framestore-manifest/1 — self-describing metadata for an intensity_maps.npz bundle (VIE-SPEC-REP §9).",
+  "type": "object",
+  "properties": {
+    "schema": { "const": "vie.framestore-manifest/1" },
+    "stage": { "type": "string", "pattern": "^phase[0-9]+$" },
+    "config": { "$ref": "pipeline_config.schema.json" },
+    "config_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "vocabulary": { "$ref": "intensity_vocabulary.schema.json" },
+    "input": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["synthetic", "video_file", "image_directory", "camera"] },
+        "name": { "type": "string" },
+        "sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "declared_fps": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      },
+      "required": ["kind", "name", "sha256", "declared_fps", "width", "height"]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "git_commit": { "type": ["string", "null"] },
+        "git_dirty": { "type": ["boolean", "null"] },
+        "python_version": { "type": "string" },
+        "numpy_version": { "type": "string" },
+        "pillow_version": { "type": ["string", "null"] },
+        "jsonschema_version": { "type": ["string", "null"] },
+        "platform": { "type": "string" },
+        "created_at_utc": { "type": "string", "format": "date-time" },
+        "duration_s": { "type": ["number", "null"], "minimum": 0 },
+        "seed": { "type": "integer", "minimum": 0 }
+      },
+      "required": ["git_commit", "git_dirty", "python_version", "numpy_version", "pillow_version", "jsonschema_version", "platform", "created_at_utc", "duration_s", "seed"]
+    },
+    "frames": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "frame_index": { "type": "integer", "minimum": 0 },
+          "npz_key": { "type": "string", "pattern": "^f[0-9]{6}$" },
+          "source_frame_id": { "type": ["string", "null"] },
+          "timestamp_us": { "type": "integer", "minimum": 0 },
+          "wall_time_utc": { "type": ["string", "null"], "format": "date-time" },
+          "height": { "type": "integer", "minimum": 1 },
+          "width": { "type": "integer", "minimum": 1 },
+          "non_finite_coerced": { "type": "integer", "minimum": 0 },
+          "clipped_to_range": { "type": "integer", "minimum": 0 },
+          "alpha_dropped": { "type": "boolean" },
+          "warnings": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["frame_index", "npz_key", "source_frame_id", "timestamp_us", "wall_time_utc", "height", "width", "non_finite_coerced", "clipped_to_range", "alpha_dropped", "warnings"]
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frames": { "type": "integer", "minimum": 0 },
+        "dropped_frames": { "type": "integer", "minimum": 0 },
+        "warnings": { "type": "integer", "minimum": 0 }
+      },
+      "required": ["frames", "dropped_frames", "warnings"]
+    },
+    "npz_key_format": { "const": "f%06d" }
+  },
+  "required": ["schema", "stage", "config", "config_sha256", "vocabulary", "input", "provenance", "frames", "counts", "npz_key_format"],
+  "additionalProperties": false
+}

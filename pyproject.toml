@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "visual-intensity-engine"
+version = "0.1.0"
+description = "Discrete Visual Intensity & Motion Representation — stage-gated research platform (current stage: Phase 1)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary-Research" }
+authors = [{ name = "DVIMR research project" }]
+dependencies = [
+    "numpy>=2.0,<3",
+    "pillow>=10.0",
+    "jsonschema>=4.21",
+]
+
+[project.optional-dependencies]
+# Real video-file / camera input (batch mode). Synthetic mode works without it.
+video = ["opencv-python-headless>=4.9"]
+dev = ["pytest>=8.0", "opencv-python-headless>=4.9"]
+
+[project.scripts]
+vie = "visual_intensity_engine.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["visual_intensity_engine*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+    "performance: performance measurement tests (latency/memory); thresholds are intentionally generous to stay CI-stable",
+    "slow: long-running tests",
+]
