@@ -91,8 +91,11 @@ metrics, provenance, pipeline, framesource, viewer), `tests/`, `LICENSE`, `READM
   POST buttons, which is what a human does anyway.
 - **No automated CSRF test against a real cross-origin browser** (would need a browser); the
   property is enforced and tested at the HTTP layer instead.
-- **Not re-verified here**: the audit's CodeQL/GitHub-Actions green status is a property of the
-  pushed commit; it must be re-confirmed on this branch once pushed, not assumed from the parent.
+- **CI on this branch**: confirmed green on the pushed commit `95a0064` — workflow `CI`, run
+  `35345185319`: `tests (py3.11)`, `tests (py3.12)`, `lint + types`, and
+  `wheel install (schemas outside the checkout)` all **success**. CodeQL had not published a
+  run for this branch at the time of writing (it is a dynamic workflow, not a repo file), so no
+  CodeQL claim is made here.
 - **Open, recorded, not claimed fixed**: camera success path [UNVERIFIED]; end-to-end malformed
   container for strict timestamp anomalies; viewer rate limiting; provenance-commit gap.
 
