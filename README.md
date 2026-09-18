@@ -6,6 +6,14 @@ question is *whether* structured discrete representations can preserve useful vi
 information at lower computational cost — decided by experiments, not assumption
 ([master plan](docs/MASTER_PLAN.md) §1, §39).
 
+> **Scope — read first.** Despite the repository name, this is **not** a motion-detection,
+> tracking, or surveillance component. The implemented stage is a *discrete intensity
+> tokenizer*: grayscale → quantized intensity map → checksummed frame store. There is no
+> optical flow, background subtraction, object detection, or learned model here; motion
+> representation is the long-term research question (Hypothesis registry), not current
+> capability. Not for medical, security, surveillance, or safety-critical use
+> ([SECURITY.md](SECURITY.md)).
+
 **Status: Phase 1 accepted** (basic intensity engine). Phase 0 (formal representation
 specification) and Phase 1 evidence are complete; Phase 2 (intensity objects /
 connected components) is next and not yet started.
@@ -14,9 +22,11 @@ connected components) is next and not yet started.
 |---|---|
 | [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md) | Controlling research plan (§1–§43) |
 | [`docs/phase-0/representation_specification.md`](docs/phase-0/representation_specification.md) | `VIE-SPEC-REP` 1.0.0 — frozen formal representation spec |
-| [`schemas/`](schemas/) | JSON Schemas (`vie.pipeline-config/1`, `vie.vocabulary/1`, `vie.framestore-manifest/1`, `vie.benchmark-result/1`) |
+| [`schemas/`](schemas/) | JSON Schemas (`vie.pipeline-config/1`, `vie.vocabulary/1`, `vie.framestore-manifest/1`, `vie.benchmark-result/1`); canonical copies ship inside the package, root files are symlinks |
 | [`docs/phase-1/phase1_report.md`](docs/phase-1/phase1_report.md) | Phase 1 stage report (acceptance evidence) |
-| [`docs/decisions/decision_log.md`](docs/decisions/decision_log.md) | Decision records (append-only) |
+| [`docs/decisions/decision_log.md`](docs/decisions/decision_log.md) | Decision records (append-only; DEC-0000/0001 stage gates, DEC-0002 audit revision) |
+| [`docs/reviews/2026-09-18-external-audit-response.md`](docs/reviews/2026-09-18-external-audit-response.md) | Point-by-point external-audit verification and dispositions |
+| [`SECURITY.md`](SECURITY.md) · [`CONTRIBUTING.md`](CONTRIBUTING.md) | Exposure rules and contribution rules |
 | [`docs/hypotheses/registry.md`](docs/hypotheses/registry.md) | Versioned hypotheses H1–H5 |
 | [`experiments/registry.json`](experiments/registry.json) | Formal experiment registry (EXP-0001) |
 
@@ -39,8 +49,12 @@ scripts/setup_env.sh                 # deterministic venv from requirements.txt
 .venv/bin/vie validate --target out/demo
 .venv/bin/vie benchmark --output experiments/EXP-0001-quantization-baseline
 
+# camera batch runs need an explicit stop condition (a live camera has no end-of-stream)
+.venv/bin/vie process --input camera:0 --max-frames 300 --output out/cam_store
+
 # exploratory live viewer (NOT benchmark output; interactions are logged)
-.venv/bin/vie serve --port 8000
+.venv/bin/vie serve --port 8000                      # loopback only (default)
+.venv/bin/vie serve --host 0.0.0.0 --allowed-host preview.example.test   # explicit exposure
 ```
 
 ## Pipeline (Phase 1)
@@ -61,9 +75,16 @@ library versions (verified by tests, not asserted).
 ## Testing
 
 ```bash
-scripts/run_tests.sh        # 170 tests: unit / property / integration / edge /
+scripts/run_tests.sh        # 215 tests: unit / property / integration / edge /
                             # fault-injection / regression (golden hashes) / performance
+.venv/bin/ruff check visual_intensity_engine tests scripts
+.venv/bin/mypy visual_intensity_engine
 ```
+
+The same checks run in CI on every push and pull request
+([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): full suite on Python 3.11 (exact
+`requirements.txt` pins — the acceptance environment) and 3.12, `vie self-test`, ruff, mypy,
+and a wheel-install smoke test that proves the packaged schemas work outside a checkout.
 
 ## Engineering rules in force
 
@@ -76,5 +97,6 @@ not hidden.
 ## Scope notice
 
 Research prototype. No medical, security, surveillance, or safety-critical use
-([master plan](docs/MASTER_PLAN.md) §32, §42). The live viewer processes camera input
-only on the local machine; no video is retained beyond explicitly exported stores.
+([master plan](docs/MASTER_PLAN.md) §32, §42). The live viewer binds 127.0.0.1 by default and
+has no authentication — network exposure is an explicit opt-in; no video is retained beyond
+explicitly exported stores. Details: [SECURITY.md](SECURITY.md).
