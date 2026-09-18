@@ -107,6 +107,11 @@ def _schema_registry(schema_dir: Path):
     return registry
 
 
+def schema_registry(schema_dir: Path):
+    """Public form of the offline `$ref` registry (used by validators and tests)."""
+    return _schema_registry(Path(schema_dir))
+
+
 def validate_against_schema(instance: dict, schema_path: Path, *, what: str) -> None:
     try:
         schema = _load_json(schema_path)

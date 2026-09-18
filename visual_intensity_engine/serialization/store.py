@@ -60,6 +60,52 @@ def write_npz_deterministic(path: Path, arrays: dict[str, np.ndarray]) -> None:
             zf.writestr(_entry_info(name), _npy_bytes(arrays[name]))
 
 
+class DeterministicNpzWriter:
+    """Append-only deterministic NPZ writer shared by the frame and object stores.
+
+    Entries are written as they arrive (bounded memory) with the fixed ZIP
+    attributes required by VIE-SPEC-REP §9.3, and keys must be added in strictly
+    increasing order so the byte layout is the sorted-entry layout of the batch
+    writer. An aborted run leaves an incomplete file, which readers reject.
+    """
+
+    def __init__(self, path: Path | str):
+        self.path = Path(path)
+        self._zip: zipfile.ZipFile | None = None
+        self._last_key: str | None = None
+        self._closed = False
+
+    def add(self, key: str, array: np.ndarray) -> None:
+        if self._closed:
+            raise SerializationError("npz writer already closed")
+        if self._last_key is not None and not key > self._last_key:
+            raise SerializationError(
+                f"npz entries must be added in strictly increasing key order ({key} after {self._last_key})"
+            )
+        if self._zip is None:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self._zip = zipfile.ZipFile(
+                self.path, "w", compression=COMPRESSION, compresslevel=COMPRESS_LEVEL
+            )
+        self._zip.writestr(_entry_info(key), _npy_bytes(array))
+        self._last_key = key
+
+    def close(self) -> None:
+        """Finalize the archive; a never-used writer still emits a valid empty zip."""
+        if self._closed:
+            raise SerializationError("npz writer already closed")
+        self._closed = True
+        if self._zip is None:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            with zipfile.ZipFile(
+                self.path, "w", compression=COMPRESSION, compresslevel=COMPRESS_LEVEL
+            ):
+                pass
+        else:
+            self._zip.close()
+            self._zip = None
+
+
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with Path(path).open("rb") as fh:
@@ -102,8 +148,7 @@ class FrameStoreWriter:
         self.provenance = provenance
         self.stage = stage
         self._rows: list[dict] = []
-        self._zip: zipfile.ZipFile | None = None
-        self._last_key: str | None = None
+        self._npz = DeterministicNpzWriter(self.outdir / "intensity_maps.npz")
         self._closed = False
 
     @property
@@ -118,19 +163,8 @@ class FrameStoreWriter:
         if self._closed:
             raise SerializationError("writer already closed")
         key = npz_key(imap.frame.frame_index)
-        if self._last_key is not None and not key > self._last_key:
-            raise SerializationError(
-                f"frames must be added in strictly increasing frame_index order "
-                f"({key} after {self._last_key}); out-of-order frames would break store ordering"
-            )
-        if self._zip is None:
-            self.outdir.mkdir(parents=True, exist_ok=True)
-            self._zip = zipfile.ZipFile(
-                self.npz_path, "w", compression=COMPRESSION, compresslevel=COMPRESS_LEVEL
-            )
-        self._zip.writestr(_entry_info(key), _npy_bytes(imap.intensity))
+        self._npz.add(key, imap.intensity)
         self._rows.append(imap.manifest_row(key))
-        self._last_key = key
 
     def _manifest(self) -> dict:
         frames = self._rows
@@ -159,15 +193,8 @@ class FrameStoreWriter:
         if self._closed:
             raise SerializationError("writer already closed")
         self._closed = True
-        if self._zip is None:  # empty store: still emit a valid, empty bundle
-            self.outdir.mkdir(parents=True, exist_ok=True)
-            with zipfile.ZipFile(
-                self.npz_path, "w", compression=COMPRESSION, compresslevel=COMPRESS_LEVEL
-            ):
-                pass
-        else:
-            self._zip.close()
-            self._zip = None
+        self.outdir.mkdir(parents=True, exist_ok=True)
+        self._npz.close()
         if duration_s is not None:
             self.provenance["duration_s"] = round(float(duration_s), 6)
         manifest = self._manifest()

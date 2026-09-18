@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maryatta8200-ops/visual-motion-detection1/schemas/region_set.schema.json",
+  "title": "VIE region set (frame-major object list)",
+  "description": "vie.region-set/1 — every region record of an object store, grouped by frame (VIE-SPEC-REP 1.1.0 §R7). Serialized with sorted keys and compact separators; floats use shortest round-trip repr so identical values give identical bytes.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "vie.region-set/1" },
+    "objects_config_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "binds this derived artifact to the objects config that produced it (1.0.0 §10.2)"
+    },
+    "frames": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "frame_index": { "type": "integer", "minimum": 0 },
+          "regions": { "type": "array", "items": { "$ref": "intensity_object.schema.json" } }
+        },
+        "required": ["frame_index", "regions"]
+      }
+    }
+  },
+  "required": ["schema", "objects_config_sha256", "frames"]
+}

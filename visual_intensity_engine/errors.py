@@ -34,3 +34,10 @@ class SerializationError(VIEError):
 
 class CompatibilityError(VIEError):
     """Vocabulary/config incompatibility when reading a stored bundle."""
+
+
+class RegionExtractionError(VIEError):
+    """Region extraction cannot honour its configuration or produced an
+    inconsistent region set (VIE-SPEC-REP 1.1.0 §R8.3): `max_regions` exceeded,
+    malformed label map, or a region set that violates its invariants. Raised
+    instead of truncating or guessing."""

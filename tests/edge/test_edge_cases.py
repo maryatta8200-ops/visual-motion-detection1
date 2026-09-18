@@ -130,3 +130,55 @@ def test_non_monotonic_timestamps_detected():
     assert "non-monotonic" in joined
     assert "frame drop suspected" in joined
     assert check_timestamp_sequence([0, 33_333, 66_666], 33_333) == []
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 (VIE-SPEC-REP 1.1.0): object-extraction boundaries
+# ---------------------------------------------------------------------------
+def test_object_extraction_on_minimum_1x1_frame():
+    from visual_intensity_engine.objects.labeling import label_level_uniform_regions
+    from visual_intensity_engine.objects.objects_config import ObjectsConfig
+
+    result = label_level_uniform_regions(np.array([[0]], dtype=np.int32), 8, ObjectsConfig())
+    assert len(result.regions) == 1
+    assert result.regions[0].area == 1
+    assert result.shapes_consistent
+
+
+def test_object_extraction_rejects_1_pixel_frame_dropped_by_min_area():
+    from visual_intensity_engine.objects.labeling import label_level_uniform_regions
+    from visual_intensity_engine.objects.objects_config import ObjectsConfig
+
+    result = label_level_uniform_regions(np.array([[0]], dtype=np.int32), 8, ObjectsConfig(min_area=2))
+    assert result.regions == ()
+    assert result.dropped_regions == 1 and result.dropped_pixels == 1
+    assert int(result.labels[0, 0]) == 0
+    assert result.shapes_consistent
+
+
+def test_every_pixel_dropped_is_not_an_error_but_is_counted():
+    from visual_intensity_engine.objects.labeling import label_level_uniform_regions
+    from visual_intensity_engine.objects.objects_config import ObjectsConfig
+
+    q = np.tile(np.arange(4, dtype=np.int32), (4, 1))  # four 4-pixel columns
+    result = label_level_uniform_regions(q, 4, ObjectsConfig(min_area=5))
+    assert result.regions == ()
+    assert result.dropped_regions == 4 and result.dropped_pixels == 16
+    assert int(np.count_nonzero(result.labels)) == 0
+
+
+def test_object_store_survives_zero_regions_and_reports_counts(tmp_path):
+    from visual_intensity_engine.config import PipelineConfig
+    from visual_intensity_engine.input.synthetic import SyntheticSource
+    from visual_intensity_engine.objects.objects_config import ObjectsConfig
+    from visual_intensity_engine.objects.pipeline import run_objects
+    from visual_intensity_engine.objects.store import ObjectStoreReader
+
+    config = PipelineConfig.default(levels=16)
+    src = SyntheticSource("gradient", (32, 32), 2, seed=0, levels=16)
+    result = run_objects(src, config, ObjectsConfig(min_area=10**6), tmp_path / "store")
+    counts = result.manifest["counts"]
+    assert counts["regions"] == 0 and counts["dropped_regions"] > 0
+    reader = ObjectStoreReader(tmp_path / "store")
+    assert reader.region_set["frames"][0]["regions"] == []
+    assert int(reader.label_map(0).max(initial=0)) == 0

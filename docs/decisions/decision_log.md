@@ -95,3 +95,35 @@ history (plan §3.7, §37).
   product-level items (license, packaging polish) are tracked in the audit-response
   document. Test suite: **215 passed** (was 170; +4 module-contract, +30 host-policy,
   +10 viewer-HTTP, +1 camera CLI split), golden hashes unchanged.
+
+## DEC-0003 — Accept VIE-SPEC-REP 1.1.0 (intensity objects) and the Phase-2 plan
+
+- Date: 2026-09-18. Type: stage gate (specification + plan). Status: **accepted**.
+- Inputs: [`docs/phase-2/representation_specification_1.1.0.md`](../phase-2/representation_specification_1.1.0.md),
+  [`docs/phase-2/phase2_plan.md`](../phase-2/phase2_plan.md), MASTER_PLAN §33 (stage
+  structure), VIE-SPEC-REP 1.0.0 (frozen), DEC-0002 (Phase 1 acceptance).
+- Decision — adopt 1.1.0 **additively**; 1.0.0 semantics, stores and golden hashes are
+  unchanged. The revision fixes, before any code was written:
+  1. an intensity object is a **level-uniform 4-connected (von Neumann) region**; the
+     partition is the maximal-component partition — connectivity 8 is an extension point
+     that MUST fail validation until a later revision defines it (§R2);
+  2. region ids are **positional**: raster discovery order, contiguous `0..n−1` over kept
+     regions; renumbering after a change is deliberate (§R4);
+  3. geometry is exact: bbox is half-open `[x0,y0,x1,y1)`, centroid is the float64 mean of
+     pixel centres, `fingerprint` is a **content signature** (sha256 of canonical JSON) and
+     explicitly *not* a cross-frame identity (§R3);
+  4. `min_area` discards sub-threshold regions **with counting** (`dropped_regions`,
+     `dropped_pixels`); label 0 marks discarded pixels; every pixel is covered
+     (`Σ areas + dropped_pixels = H·W`); `max_regions` fails the run instead of truncating
+     (§R5, §R6);
+  5. the `vie-objectstore/1` bundle, its byte-determinism rules, its replay rule and the
+     fast-validator ↔ JSON-Schema parity obligation are normative (§R7, §R8);
+  6. §R9 is a normative worked example and is executable
+     (`tests/unit/test_spec_example_phase2.py`).
+- Explicitly out of scope: cross-frame tracking/identity (Phase 3), motion (Phase 3+),
+  optimization (plan §3.14/§8), token schema changes (`vie.token/2` is future work and no
+  per-pixel `region_id` field was added to tokens).
+- Untouched: `docs/MASTER_PLAN.md`, `docs/hypotheses/registry.md`, 1.0.0 documents,
+  `configs/`, `experiments/EXP-0001/`.
+- Follow-up gate: **DEC-0004** accepts or rejects Phase 2 on evidence (full test suite,
+  ruff/mypy, `vie self-test`, EXP-0002 measured cost, plan §10 acceptance table).

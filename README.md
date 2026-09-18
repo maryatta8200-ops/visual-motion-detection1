@@ -45,8 +45,13 @@ scripts/setup_env.sh                 # deterministic venv from requirements.txt
 # deterministic self-check (round-trip + byte-identical replay)
 .venv/bin/vie self-test
 
-# validate a store or config; run the baseline benchmark
+# Phase 2: intensity objects → object store (region labels + records + checksums)
+.venv/bin/vie objects --input synthetic:moving_square --max-frames 32 \
+                      --min-area 2 --output out/objects --previews 3
+
+# validate a store (frame store or object store) or a config
 .venv/bin/vie validate --target out/demo
+.venv/bin/vie validate --target out/objects
 .venv/bin/vie benchmark --output experiments/EXP-0001-quantization-baseline
 
 # camera batch runs need an explicit stop condition (a live camera has no end-of-stream)
@@ -72,11 +77,34 @@ Raw frames are never required to be discarded — stores are **additive** repres
 bound to their source (plan §2). Replays are byte-identical for identical inputs and
 library versions (verified by tests, not asserted).
 
+## Intensity objects (Phase 2)
+
+```
+quantized intensity map
+  → label level-uniform, 4-connected regions (von Neumann; raster discovery order)
+  → ids 0..n−1 over kept regions (positional, reproducible — NOT cross-frame tracking)
+  → min_area discards are counted and reported (dropped_regions / dropped_pixels); label 0
+  → max_regions exceeded ⇒ RegionExtractionError (the run stops; output is never truncated)
+  → vie-objectstore/1: region_labels.npz (int32) + regions.json + manifest.json
+                        + checksums.json + objects_config.json + metrics.json
+```
+
+The object contract is [VIE-SPEC-REP 1.1.0](docs/phase-2/representation_specification_1.1.0.md),
+an additive revision of 1.0.0: Phase-1 stores and golden hashes are unchanged, and tokens
+keep their 1.0.0 semantics. Entity identity *across frames* (tracking) is explicitly out of
+scope — Phase 3 owns it, and the `fingerprint` field is only a content signature (§R3.4).
+Costs (extraction latency, label-map bytes, region-metadata bytes) are measured in
+`experiments/EXP-0002-object-extraction/`; the reference implementation is deliberately
+un-optimized until a profiling phase (plan §3.14).
+
+JSON Schemas live in the package (`visual_intensity_engine/schemas/`) and are shipped as
+package data; the repo-root [`schemas/`](schemas) entries are symlinks for browsing.
+
 ## Testing
 
 ```bash
-scripts/run_tests.sh        # 215 tests: unit / property / integration / edge /
-                            # fault-injection / regression (golden hashes) / performance
+scripts/run_tests.sh        # unit / property / integration / edge / fault-injection /
+                            # regression (golden hashes) / performance
 .venv/bin/ruff check visual_intensity_engine tests scripts
 .venv/bin/mypy visual_intensity_engine
 ```

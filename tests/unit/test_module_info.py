@@ -25,6 +25,11 @@ MODULES = [
     "visual_intensity_engine.preprocessing.grayscale",
     "visual_intensity_engine.preprocessing.quantization",
     "visual_intensity_engine.serialization.store",
+    "visual_intensity_engine.objects.objects_config",
+    "visual_intensity_engine.objects.labeling",
+    "visual_intensity_engine.objects.extraction",
+    "visual_intensity_engine.objects.store",
+    "visual_intensity_engine.objects.pipeline",
     "visual_intensity_engine.visualization.render",
     "visual_intensity_engine.visualization.server",
 ]

@@ -139,3 +139,96 @@ def module_info() -> dict:
                                     "(offline/batch rendering only, never in the processing path)",
         "test_coverage": "tests/unit/test_render.py",
     }
+
+
+def region_boundaries(labels: np.ndarray) -> np.ndarray:
+    """Boolean mask of label-change pixels (including the frame border).
+
+    Deterministic pure-numpy definition used by overlays and tests: a pixel is a
+    boundary if any 4-neighbour (or the outside of the frame) has a different
+    label. ``label 0`` (discarded sub-``min_area`` pixels, VIE-SPEC-REP 1.1.0
+    §R6) participates normally, so dropped pixels are outlined too.
+    """
+    lab = np.asarray(labels)
+    if lab.ndim != 2:
+        raise ValueError(f"label map must be 2-D, got shape {lab.shape}")
+    mask = np.zeros(lab.shape, dtype=bool)
+    mask[:, 0] = True
+    mask[:, -1] = True
+    mask[0, :] = True
+    mask[-1, :] = True
+    diff = lab[:, 1:] != lab[:, :-1]
+    mask[:, 1:] |= diff
+    mask[:, :-1] |= diff
+    diff = lab[1:, :] != lab[:-1, :]
+    mask[1:, :] |= diff
+    mask[:-1, :] |= diff
+    return mask
+
+
+def render_object_overlay(
+    raw: np.ndarray,
+    y: np.ndarray,
+    qmap: np.ndarray,
+    frame,
+    vocabulary: IntensityVocabulary,
+    *,
+    title: str,
+    out_path,
+    max_labels: int = 12,
+    dropped_color: tuple[int, int, int] = (255, 0, 128),
+) -> Image.Image:
+    """ORIGINAL | QUANTIZED | REGIONS panel for one extracted frame.
+
+    REGIONS shows the quantized colors with region boundaries in white, pixels
+    discarded by ``min_area`` in ``dropped_color`` (counted, never hidden), and
+    the ``max_labels`` largest objects labelled `id level area`. Exploratory
+    inspection output (plan §21) — not a benchmark artifact.
+    """
+    palette = deterministic_palette(vocabulary.levels, vocabulary.palette_seed)
+    labels = np.asarray(frame.labels)
+    if labels.shape != np.asarray(qmap).shape:
+        raise ValueError(
+            f"label map shape {labels.shape} does not match intensity map shape {np.asarray(qmap).shape}"
+        )
+    base = colorize(qmap, palette)
+    overlay = base.copy()
+    boundaries = region_boundaries(labels)
+    overlay[boundaries] = (255, 255, 255)
+    if frame.dropped_pixels:
+        overlay[labels == 0] = dropped_color
+        overlay[(labels == 0) & boundaries] = (255, 255, 255)
+
+    panels = [
+        Image.fromarray(_as_uint8_rgb(raw)),
+        Image.fromarray(np.stack([to_uint8_gray(y)] * 3, axis=-1)),
+        Image.fromarray(overlay),
+    ]
+    h = max(p.height for p in panels)
+    w = sum(p.width for p in panels)
+    header = 26
+    footer = 18
+    canvas = Image.new("RGB", (w, h + header + footer), (24, 24, 24))
+    draw = ImageDraw.Draw(canvas)
+    labels_txt = ["ORIGINAL", "GRAYSCALE", "REGIONS (id level area)"]
+    x = 0
+    for panel, label in zip(panels, labels_txt, strict=True):
+        canvas.paste(panel, (x, header))
+        draw.text((x + 6, 6), f"{label}  {title}", fill=(230, 230, 230))
+        x += panel.width
+    for obj in sorted(frame.objects, key=lambda o: (-o.area, o.region_id))[:max_labels]:
+        x0, y0, _, _ = obj.bbox
+        draw.text(
+            (x0 + 2, header + y0 + 1),
+            f"{obj.region_id} {obj.symbol} {obj.area}",
+            fill=(255, 255, 255),
+            stroke_width=2,
+            stroke_fill=(0, 0, 0),
+        )
+    footer_text = (
+        f"objects={frame.region_count} dropped_regions={frame.dropped_regions} "
+        f"dropped_pixels={frame.dropped_pixels} vocab={vocabulary.vocabulary_version}"
+    )
+    draw.text((6, h + header + 3), footer_text, fill=(170, 170, 170))
+    _save_png(canvas, out_path)
+    return canvas
