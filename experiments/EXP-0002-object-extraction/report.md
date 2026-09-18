@@ -104,3 +104,12 @@ the number of 4-connected runs, and therefore for region-count-dependent costs.
   Cross-frame identity is explicitly out of scope for Phase 2 (VIE-SPEC-REP 1.1.0 §R3.4).
 - Optimization is deliberately deferred (plan §3.14/§8); these numbers are the baseline
   a later profiling phase must beat.
+
+## Provenance note (added after the run, 2026-09-18)
+
+`result.json` records `code_commit = a86b70a`. The run executed that commit's measurement
+code from the working tree; the only delta recorded in a later commit (0a1138c) is the
+`--adversarial` CLI parser — a86b70a's inline parser could not unpack the
+`WIDTHxHEIGHT:min_area:frames` triples it was handed, and the fix shipped as
+`_parse_adversarial()`. The diff between the two commits is confined to that CLI helper, so
+no measured quantity is affected; this note exists so the recorded commit can be audited.
