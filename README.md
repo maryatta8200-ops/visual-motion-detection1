@@ -33,7 +33,22 @@ temporal linkage is the next stage and has not been started (it needs its own ga
 | [`docs/reviews/2026-09-18-phase2-audit-response.md`](docs/reviews/2026-09-18-phase2-audit-response.md) | Point-by-point dispositions of the Phase-2 design/readiness audit (DEC-0005) |
 | [`SECURITY.md`](SECURITY.md) · [`CONTRIBUTING.md`](CONTRIBUTING.md) | Exposure rules and contribution rules |
 | [`docs/hypotheses/registry.md`](docs/hypotheses/registry.md) | Versioned hypotheses H1–H5 |
+| [`AGENTS.md`](AGENTS.md) · [`docs/automation/lmarena-agent.md`](docs/automation/lmarena-agent.md) | LMArena/LMarena automated-work contract and safe operator workflow |
 | [`experiments/registry.json`](experiments/registry.json) | Formal experiment registry (EXP-0001 … EXP-0005, append-only) |
+
+## LMArena automated work
+
+The repository includes a portable [`AGENTS.md`](AGENTS.md) contract for an LMArena (also written
+“LMarena”) coding agent. It requires each task to trace to the controlling master plan and current
+decision gate, prevents autonomous phase advancement, and requires evidence before a maintainer
+reviews a change. For GitHub-based handoffs, open the
+[LMArena work-order form](.github/ISSUE_TEMPLATE/lmarena-work-order.yml); it captures objective,
+plan traceability, acceptance evidence, safeguards, rollback, and any needed authorization.
+
+This repository intentionally does **not** store model/API credentials, a webhook, a scheduled
+agent runner, or auto-merge permission. Configure the chosen agent host to load `AGENTS.md` and
+use least-privilege, branch/PR-based access; see the
+[LMArena operator guide](docs/automation/lmarena-agent.md).
 
 ## Quickstart
 
