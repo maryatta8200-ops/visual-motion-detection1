@@ -6,7 +6,6 @@ import numpy as np
 import pytest
 
 from visual_intensity_engine.config import InputDomainSettings, PipelineConfig
-from visual_intensity_engine.input.synthetic import SyntheticSource
 from visual_intensity_engine.intensity.vocabulary import IntensityVocabulary
 from visual_intensity_engine.pipeline import process_frame
 from visual_intensity_engine.preprocessing.grayscale import to_grayscale
@@ -24,7 +23,9 @@ def test_minimum_frame_size_1x1():
 
 
 def test_empty_frame_rejected():
-    with pytest.raises(Exception):
+    from visual_intensity_engine.errors import FrameValidationError
+
+    with pytest.raises(FrameValidationError):
         to_grayscale(np.zeros((0, 0, 3), np.uint8), InputDomainSettings())
 
 
@@ -68,12 +69,10 @@ def test_pure_channels_l16_mapping():
 
 def test_variable_frame_sizes_in_one_store(tmp_path):
     """Writer supports heterogeneous shapes; reader restores exact arrays."""
+
     from visual_intensity_engine.serialization.store import (
         FrameStoreWriter,
-        write_npz_deterministic,
     )
-    import json as _json
-    from dataclasses import replace
 
     config = PipelineConfig.default()
     vocab = IntensityVocabulary.build_uniform(16)
@@ -88,7 +87,8 @@ def test_variable_frame_sizes_in_one_store(tmp_path):
     )
     rng = np.random.default_rng(2)
     sizes = [(4, 6), (9, 3), (16, 16)]
-    from visual_intensity_engine.intensity.intensity_map import FrameInfo, IntensityMap as IM
+    from visual_intensity_engine.intensity.intensity_map import FrameInfo
+    from visual_intensity_engine.intensity.intensity_map import IntensityMap as IM
 
     for i, (h, w) in enumerate(sizes):
         arr = rng.integers(0, 16, (h, w), dtype=np.uint8)

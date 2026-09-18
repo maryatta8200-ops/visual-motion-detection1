@@ -103,8 +103,19 @@ def test_corrupt_video_fails_gracefully(tmp_path):
 
 
 @requires_cv2
-def test_missing_camera_fails_gracefully(tmp_path):
+def test_camera_requires_an_explicit_stop_condition(tmp_path):
+    """A live camera has no end-of-stream, so an unbounded batch run is refused."""
     proc = run_cli("process", "--input", "camera:99", "--output", str(tmp_path / "o"), expect=2)
+    assert "ConfigError" in proc.stderr
+    assert "--max-frames" in proc.stderr
+
+
+@requires_cv2
+def test_missing_camera_fails_gracefully(tmp_path):
+    proc = run_cli(
+        "process", "--input", "camera:99", "--max-frames", "10",
+        "--output", str(tmp_path / "o"), expect=2,
+    )
     assert "SourceError" in proc.stderr
 
 

@@ -9,8 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import sys
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import jsonschema
@@ -21,12 +20,18 @@ SCHEMA_NAME = "pipeline_config.schema.json"
 CONFIG_SCHEMA_ID = "vie.pipeline-config/1"
 
 
-def schemas_dir() -> Path:
-    """Locate the repo `schemas/` directory.
+PACKAGE_SCHEMAS_DIR = Path(__file__).resolve().parent / "schemas"
 
-    Works from a source checkout and from `pip install -e .` (package dir sits
-    directly inside the repo root). Override with env VIE_SCHEMA_DIR if the
-    package is copied elsewhere.
+
+def schemas_dir() -> Path:
+    """Locate the JSON Schemas.
+
+    Resolution order:
+    1. `VIE_SCHEMA_DIR` (explicit override for pinned/copied schema sets);
+    2. `visual_intensity_engine/schemas/` — the packaged canonical copies, so
+       wheels and `pip install` work outside a source checkout;
+    3. a `schemas/` directory anywhere above the package (legacy source
+       checkout; repo `schemas/` are symlinks to (2)).
     """
     import os
 
@@ -35,13 +40,38 @@ def schemas_dir() -> Path:
         p = Path(env)
         if p.is_dir():
             return p
-    here = Path(__file__).resolve()
-    for parent in here.parents:
+    if (PACKAGE_SCHEMAS_DIR / SCHEMA_NAME).is_file():
+        return PACKAGE_SCHEMAS_DIR
+    for parent in Path(__file__).resolve().parents:
         candidate = parent / "schemas"
         if (candidate / SCHEMA_NAME).is_file():
             return candidate
     raise ConfigError(
-        f"cannot locate schemas/{SCHEMA_NAME}; set VIE_SCHEMA_DIR to the repo 'schemas' directory"
+        f"cannot locate {SCHEMA_NAME}; the package data looks incomplete — "
+        "set VIE_SCHEMA_DIR to a directory containing the vie schemas"
+    )
+
+
+def configs_dir() -> Path:
+    """Locate the shipped versioned configs (research artifacts, not package data).
+
+    Used by tests and tooling; resolves `shell`-side env `VIE_CONFIGS_DIR`, then a
+    `configs/` directory above the package (source checkout). Wheels do not ship
+    configs, so callers outside a checkout must set the env var.
+    """
+    import os
+
+    env = os.environ.get("VIE_CONFIGS_DIR")
+    if env:
+        p = Path(env)
+        if p.is_dir():
+            return p
+    for parent in Path(__file__).resolve().parents:
+        candidate = parent / "configs"
+        if candidate.is_dir():
+            return candidate
+    raise ConfigError(
+        "cannot locate the 'configs/' directory; set VIE_CONFIGS_DIR to the repo 'configs' directory"
     )
 
 
@@ -173,7 +203,7 @@ class PipelineConfig:
 
     # ---- construction --------------------------------------------------
     @classmethod
-    def from_dict(cls, d: dict) -> "PipelineConfig":
+    def from_dict(cls, d: dict) -> PipelineConfig:
         schema_path = schemas_dir() / SCHEMA_NAME
         validate_against_schema(d, schema_path, what="pipeline config")
         max_frames = d.get("max_frames")
@@ -188,11 +218,11 @@ class PipelineConfig:
         )
 
     @classmethod
-    def load(cls, path: Path) -> "PipelineConfig":
+    def load(cls, path: Path) -> PipelineConfig:
         return cls.from_dict(_load_json(Path(path)))
 
     @classmethod
-    def default(cls, levels: int = 16) -> "PipelineConfig":
+    def default(cls, levels: int = 16) -> PipelineConfig:
         return cls(
             quantization=QuantizationSettings(levels=levels),
             input_domain=InputDomainSettings(),

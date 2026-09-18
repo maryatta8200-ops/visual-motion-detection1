@@ -75,7 +75,7 @@ def render_frame_panel(
     draw = ImageDraw.Draw(canvas)
     labels = ["ORIGINAL", "GRAYSCALE", f"QUANTIZED L={vocabulary.levels}"]
     x = 0
-    for panel, label in zip(panels, labels):
+    for panel, label in zip(panels, labels, strict=True):
         canvas.paste(panel, (x, header))
         draw.text((x + 6, 6), f"{label}  {title}", fill=(230, 230, 230))
         x += panel.width
@@ -135,6 +135,7 @@ def module_info() -> dict:
         "config_schema": "palette from vocabulary (levels, palette_seed)",
         "error_behavior": "propagates validation errors for malformed maps",
         "logging_behavior": "silent",
-        "performance_expectations": "~10-30 ms per 1080p panel",
+        "performance_expectations": "measured 2026-09-18: ~0.4 s per 1080p panel "
+                                    "(offline/batch rendering only, never in the processing path)",
         "test_coverage": "tests/unit/test_render.py",
     }

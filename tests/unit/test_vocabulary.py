@@ -18,7 +18,7 @@ def test_intervals_partition_unit_interval(levels):
     vocab = IntensityVocabulary.build_uniform(levels)
     assert len(vocab.tokens) == levels
     assert vocab.tokens[0].lower_inclusive == 0.0
-    for a, b in zip(vocab.tokens, vocab.tokens[1:]):
+    for a, b in zip(vocab.tokens, vocab.tokens[1:], strict=False):
         assert b.lower_inclusive == pytest.approx(a.upper_exclusive, abs=1e-12)
     last = vocab.tokens[-1]
     assert last.upper_inclusive is True

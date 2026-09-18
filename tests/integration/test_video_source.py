@@ -7,8 +7,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from ..conftest import requires_cv2
 from visual_intensity_engine.errors import SourceError
+
+from ..conftest import requires_cv2
 
 cv2 = pytest.importorskip("cv2")
 

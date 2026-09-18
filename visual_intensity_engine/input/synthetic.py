@@ -8,7 +8,7 @@ seeded `numpy.random.Generator` (PCG64), never global RNG state.
 
 from __future__ import annotations
 
-from typing import Iterator
+from collections.abc import Iterator
 
 import numpy as np
 
@@ -139,6 +139,7 @@ def module_info() -> dict:
         "config_schema": "SCENES enum; deterministic given (params, seed)",
         "error_behavior": "ValueError for unknown scene / bad parameters",
         "logging_behavior": "silent",
-        "performance_expectations": ">100 fps at 160x120",
+        "performance_expectations": "pure-numpy generation, O(pixels); no rate claimed "
+                                  "(generation is excluded from EXP-0001 timing)",
         "test_coverage": "tests/unit/test_synthetic_source.py",
     }

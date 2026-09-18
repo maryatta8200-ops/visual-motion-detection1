@@ -12,16 +12,12 @@ This is a BASELINE of the reference implementation — not a claim of advantage
 from __future__ import annotations
 
 import argparse
-import json
 import logging
 import time
 from pathlib import Path
 
-import numpy as np
-
 from ..config import InputDomainSettings, QuantizationSettings
 from ..input.synthetic import SyntheticSource
-from ..intensity.vocabulary import IntensityVocabulary
 from ..metrics import summarize
 from ..preprocessing.grayscale import to_grayscale
 from ..preprocessing.quantization import quantize
@@ -177,7 +173,8 @@ def render_report(result: dict) -> str:
         lines += [
             f"## {w}×{h}",
             "",
-            "| levels | gray p50 (ms) | quantize p50 (ms) | end-to-end p50 (ms) | raw B | gray f64 B | quant u8 B | quant/raw |",
+            "| levels | gray p50 (ms) | quantize p50 (ms) | end-to-end p50 (ms) | raw B | "
+            "gray f64 B | quant u8 B | quant/raw |",
             "|---:|---:|---:|---:|---:|---:|---:|---:|",
         ]
         for cond in sorted(conds, key=lambda c: c["levels"]):

@@ -11,16 +11,16 @@ from visual_intensity_engine.intensity.intensity_map import FrameInfo, Intensity
 
 def make_imap(arr, **overrides):
     h, w = arr.shape[0], arr.shape[1]
-    defaults = dict(
-        intensity=arr,
-        levels=16,
-        vocabulary_version="uniform-l16-v1",
-        config_sha256="0" * 64,
-        frame=FrameInfo(
+    defaults = {
+        "intensity": arr,
+        "levels": 16,
+        "vocabulary_version": "uniform-l16-v1",
+        "config_sha256": "0" * 64,
+        "frame": FrameInfo(
             frame_index=0, source_frame_id=None, timestamp_us=0,
             wall_time_utc=None, height=h, width=w,
         ),
-    )
+    }
     defaults.update(overrides)
     return IntensityMap(**defaults)
 

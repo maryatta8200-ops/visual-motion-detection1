@@ -14,10 +14,11 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import shutil
 import sys
 import tempfile
+from collections.abc import Sequence
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from . import STAGE, __version__
 from .config import PipelineConfig
@@ -25,6 +26,11 @@ from .errors import ConfigError, VIEError
 from .input.synthetic import SCENES, SyntheticSource
 from .intensity.vocabulary import IntensityVocabulary
 from .provenance import dumps_json
+
+if TYPE_CHECKING:  # typing-only imports; the CLI stays importable without numpy
+    import numpy as np
+
+    from .intensity.intensity_map import IntensityMap
 
 logger = logging.getLogger("vie.cli")
 
@@ -34,8 +40,6 @@ def _resolve_source(spec: str, *, config: PipelineConfig):
     if spec.startswith("synthetic:"):
         scene = spec.split(":", 1)[1] or "moving_square"
         if scene not in SCENES:
-            from .errors import ConfigError
-
             raise ConfigError(
                 f"unknown synthetic scene '{scene}' (available: {', '.join(SCENES)})"
             )
@@ -47,6 +51,13 @@ def _resolve_source(spec: str, *, config: PipelineConfig):
             levels=config.quantization.levels,
         )
     if spec.startswith("camera:"):
+        if config.max_frames is None:
+            # A live camera has no end-of-stream: an unbounded batch run would never
+            # return, so require an explicit stop condition (plan §20 stop/resume).
+            raise ConfigError(
+                "camera batch processing requires an explicit stop condition: "
+                "pass --max-frames N (or use --input <file> for a finite source)"
+            )
         from .input.video import CameraSource
 
         return CameraSource(int(spec.split(":", 1)[1]), strict=config.strict)
@@ -141,7 +152,7 @@ def cmd_self_test(args) -> int:
         # round-trip equality
         src_d = SyntheticSource("moving_square", (160, 120), 24, seed=42)
         reloaded = FrameStoreReader(root / "replay_a").load_all()
-        for rec, stored in zip(src_d.frames(), reloaded):
+        for rec, stored in zip(src_d.frames(), reloaded, strict=True):
             from .pipeline import process_frame
 
             pf = process_frame(rec, config, IntensityVocabulary.build_uniform(levels))
@@ -160,13 +171,13 @@ def cmd_self_test(args) -> int:
     return 0 if not failures else 1
 
 
-def np_histogram(maps) -> "np.ndarray":
-    import numpy as np
-
+def np_histogram(maps: Sequence[IntensityMap]) -> np.ndarray:
     total = None
     for m in maps:
         h = m.histogram
         total = h if total is None else total + h
+    if total is None:  # explicit, never a silent empty result (plan §3.10)
+        raise VIEError("np_histogram: no intensity maps to summarize")
     return total
 
 
@@ -197,10 +208,24 @@ def cmd_validate(args) -> int:
 
 
 def cmd_serve(args) -> int:
-    from .visualization.server import serve
+    from .visualization.server import is_loopback_bind, serve
 
     logger.warning("live viewer is EXPLORATORY ONLY — never benchmark output (plan §21)")
-    server = serve(host=args.host, port=args.port, seed=args.seed)
+    log_path = Path(args.log_path) if args.log_path else Path("logs/viewer_interactions.jsonl")
+    logger.info("viewer interaction log: %s", log_path.resolve())
+    if not is_loopback_bind(args.host):
+        logger.warning(
+            "binding the viewer to %s exposes it to the network without authentication; "
+            "it is for local inspection on trusted networks only (plan §41)",
+            args.host,
+        )
+    server = serve(
+        host=args.host,
+        port=args.port,
+        seed=args.seed,
+        log_path=log_path,
+        allowed_hosts=tuple(args.allowed_host or ()),
+    )
     try:
         server.serve_forever()
     except KeyboardInterrupt:  # pragma: no cover
@@ -211,7 +236,10 @@ def cmd_serve(args) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="vie",
-        description=f"Visual Intensity Engine v{__version__} — stage {STAGE} (Discrete Visual Intensity & Motion Representation)",
+        description=(
+            f"Visual Intensity Engine v{__version__} — stage {STAGE} "
+            "(Discrete Visual Intensity & Motion Representation)"
+        ),
     )
     parser.add_argument("--version", action="version", version=f"vie {__version__} ({STAGE})")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -247,9 +275,17 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=cmd_validate)
 
     p = sub.add_parser("serve", help="exploratory live viewer (NOT benchmark output)")
-    p.add_argument("--host", default="0.0.0.0")
+    p.add_argument("--host", default="127.0.0.1",
+                   help="bind address (default loopback; the viewer has no authentication, "
+                        "so network exposure is an explicit opt-in, e.g. --host 0.0.0.0)")
     p.add_argument("--port", type=int, default=8000)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--allowed-host", action="append", default=None, metavar="NAME",
+                   help="extra Host header name to accept (repeatable; for reverse proxies "
+                        "or tunnels that rewrite Host)")
+    p.add_argument("--log-path", default=None, metavar="PATH",
+                   help="interaction log location (default: logs/viewer_interactions.jsonl "
+                        "relative to the working directory)")
     p.set_defaults(func=cmd_serve)
     return parser
 

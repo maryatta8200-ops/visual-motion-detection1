@@ -9,21 +9,20 @@ import pytest
 
 from visual_intensity_engine.config import PipelineConfig
 from visual_intensity_engine.errors import (
-    ConfigError,
     FrameValidationError,
     SerializationError,
     SourceError,
 )
 from visual_intensity_engine.input.synthetic import SyntheticSource
+from visual_intensity_engine.intensity.vocabulary import IntensityVocabulary
 from visual_intensity_engine.pipeline import run_pipeline
 from visual_intensity_engine.serialization.store import FrameStoreReader, FrameStoreWriter
-from visual_intensity_engine.intensity.vocabulary import IntensityVocabulary
 
 
 def test_process_not_a_frame_object():
     config = PipelineConfig.default()
-    from visual_intensity_engine.pipeline import process_frame
     from visual_intensity_engine.input.framesource import FrameRecord
+    from visual_intensity_engine.pipeline import process_frame
 
     with pytest.raises(FrameValidationError):
         process_frame(
@@ -93,7 +92,8 @@ def test_corrupt_npz_zip(tmp_path):
                     "platform": "t", "created_at_utc": "1970-01-01T00:00:00.000Z",
                     "duration_s": None, "seed": 0},
     )
-    from visual_intensity_engine.intensity.intensity_map import FrameInfo, IntensityMap as IM
+    from visual_intensity_engine.intensity.intensity_map import FrameInfo
+    from visual_intensity_engine.intensity.intensity_map import IntensityMap as IM
 
     writer.add(IM(np.zeros((4, 4), np.uint8), 16, vocab.vocabulary_version, config.sha256(),
                   FrameInfo(0, None, 0, None, 4, 4)))
@@ -101,9 +101,15 @@ def test_corrupt_npz_zip(tmp_path):
     npz_path = tmp_path / "intensity_maps.npz"
     npz_path.write_bytes(b"PK\x03\x04 garbage not a zip")
     # checksums still match the new corrupted file if attacker recomputes; zip open fails
-    checksums = {"algorithm": "sha256",
-                 "artifacts": {"intensity_maps.npz": __import__("hashlib").sha256(npz_path.read_bytes()).hexdigest(),
-                               "manifest.json": __import__("hashlib").sha256((tmp_path / "manifest.json").read_bytes()).hexdigest()}}
+    import hashlib
+
+    checksums = {
+        "algorithm": "sha256",
+        "artifacts": {
+            "intensity_maps.npz": hashlib.sha256(npz_path.read_bytes()).hexdigest(),
+            "manifest.json": hashlib.sha256((tmp_path / "manifest.json").read_bytes()).hexdigest(),
+        },
+    }
     (tmp_path / "checksums.json").write_text(json.dumps(checksums))
     reader = FrameStoreReader(tmp_path)
     with pytest.raises(Exception):
@@ -123,7 +129,8 @@ def test_writer_rejects_add_after_close(tmp_path):
                     "duration_s": None, "seed": 0},
     )
     writer.close()
-    from visual_intensity_engine.intensity.intensity_map import FrameInfo, IntensityMap as IM
+    from visual_intensity_engine.intensity.intensity_map import FrameInfo
+    from visual_intensity_engine.intensity.intensity_map import IntensityMap as IM
 
     with pytest.raises(SerializationError, match="closed"):
         writer.add(IM(np.zeros((4, 4), np.uint8), 16, vocab.vocabulary_version, config.sha256(),

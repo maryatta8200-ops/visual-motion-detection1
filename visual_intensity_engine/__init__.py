@@ -12,11 +12,11 @@ __version__ = "0.1.0"
 STAGE = "phase1"
 
 from .errors import (  # noqa: F401
-    VIEError,
+    CompatibilityError,
     ConfigError,
     FrameValidationError,
     NonFinitePixelError,
-    SourceError,
     SerializationError,
-    CompatibilityError,
+    SourceError,
+    VIEError,
 )

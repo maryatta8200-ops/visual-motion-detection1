@@ -16,7 +16,7 @@ from visual_intensity_engine.intensity.vocabulary import IntensityVocabulary
 from visual_intensity_engine.pipeline import process_frame
 from visual_intensity_engine.preprocessing.grayscale import to_grayscale
 from visual_intensity_engine.preprocessing.quantization import quantize_uniform
-from visual_intensity_engine.serialization.store import FrameStoreWriter, write_npz_deterministic
+from visual_intensity_engine.serialization.store import write_npz_deterministic
 
 from ..conftest import SUPPORTED_LEVELS
 
