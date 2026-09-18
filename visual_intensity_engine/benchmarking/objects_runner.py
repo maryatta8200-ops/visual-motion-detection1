@@ -79,19 +79,17 @@ def measure_condition(
     raw_bytes = intensity_bytes = label_bytes = metadata_bytes = 0
     regions_kept = regions_dropped = dropped_pixels = 0
 
+    # Latency pass: untraced, because tracemalloc tracing inflates allocation-heavy
+    # code by ~1.6x in this implementation (measured; see the report's method note).
     for i, pf in enumerate(prepared):
-        tracemalloc.start()
         t0 = time.perf_counter_ns()
         eframe = extract_objects(pf.imap, vocabulary, objects_config)
         t1 = time.perf_counter_ns()
-        _, peak = tracemalloc.get_traced_memory()
-        tracemalloc.stop()
         if i < warmup:
             continue
         extract_ns.append(t1 - t0)
         regions_per_frame.append(float(eframe.region_count))
         dropped_per_frame.append(float(eframe.dropped_regions))
-        peak_alloc = max(peak_alloc, peak)
         raw_bytes = int(pf.imap.intensity.size * 3)  # uint8 RGB source frame
         intensity_bytes = int(pf.imap.intensity.nbytes)
         label_bytes = int(eframe.labels.nbytes)
@@ -99,6 +97,14 @@ def measure_condition(
         regions_kept += eframe.region_count
         regions_dropped += eframe.dropped_regions
         dropped_pixels += eframe.dropped_pixels
+
+    # Memory pass: separate, untimed extraction with tracemalloc active, so the
+    # reported peak never contaminates the reported latency.
+    tracemalloc.start()
+    extract_objects(prepared[-1].imap, vocabulary, objects_config)
+    _, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    peak_alloc = max(peak_alloc, peak)
 
     noise_tag = f"-noise{noise_px}" if noise_px else ""
     return {
@@ -129,6 +135,14 @@ def measure_condition(
     }
 
 
+# (width, height, min_area, frames): dense per-pixel noise at L=256 is the run-count
+# worst case. The reference implementation's records are one Python object per region,
+# so min_area bounds the measured envelope; the fully dense 1920x1080 case (min_area=1,
+# ~2.07M regions) was observed to exceed a 3 GB machine and is recorded as such in the
+# report instead of being silently skipped.
+DEFAULT_ADVERSARIAL = ((320, 240, 1, 3), (640, 480, 1, 3), (1920, 1080, 2, 3))
+
+
 def run_benchmark(
     outdir: Path | str,
     *,
@@ -139,7 +153,8 @@ def run_benchmark(
     frames: int = 5,
     warmup: int = 2,
     adversarial_noise_fraction: float = 1.0,
-    adversarial_frames: int = 3,
+    adversarial_specs=DEFAULT_ADVERSARIAL,
+    notes: tuple[str, ...] = (),
     seed: int = 0,
 ) -> Path:
     outdir = Path(outdir)
@@ -156,13 +171,16 @@ def run_benchmark(
                     )
                 )
     # adversarial: dense per-pixel noise at L=256, the worst case for run counts
-    for (w, h) in resolutions:
+    for (w, h, min_area, adv_frames) in adversarial_specs:
         noise_px = int(w * h * adversarial_noise_fraction)
-        logger.info("adversarial condition noise L=256 %dx%d (noise_px=%d)", w, h, noise_px)
+        logger.info(
+            "adversarial condition noise L=256 %dx%d min_area=%d (noise_px=%d)",
+            w, h, min_area, noise_px,
+        )
         conditions.append(
             measure_condition(
-                scene="static", width=w, height=h, levels=256,
-                frames=adversarial_frames, warmup=1, noise_px=noise_px, seed=seed,
+                scene="static", width=w, height=h, levels=256, min_area=min_area,
+                frames=adv_frames, warmup=1, noise_px=noise_px, seed=seed,
             )
         )
     commit = None
@@ -189,7 +207,10 @@ def run_benchmark(
         "repeats_per_condition": frames,
         "measurement_method": {
             "clock": "time.perf_counter_ns (monotonic)",
-            "memory": "tracemalloc peak of the extraction call (label map + records)",
+            "memory": (
+                "tracemalloc peak of the extraction call (label map + records), measured in a "
+                "separate untimed pass: tracing inflates latency ~1.6x, so timings are untraced"
+            ),
             "timer_resolution_note": (
                 "ns resolution, single-threaded; extraction only (grayscale+quantization "
                 "excluded, they are EXP-0001); region_metadata_json is the exact serialized "
@@ -204,7 +225,7 @@ def run_benchmark(
     )
     result_path = outdir / "result.json"
     result_path.write_text(dumps_json(result), encoding="utf-8")
-    (outdir / "report.md").write_text(render_report(result), encoding="utf-8")
+    (outdir / "report.md").write_text(render_report(result, notes=notes), encoding="utf-8")
     logger.info("object benchmark written to %s", outdir)
     return result_path
 
@@ -217,7 +238,7 @@ def _pct(part: float, whole: float) -> str:
     return f"{part / whole:.4f}" if whole else "n/a"
 
 
-def render_report(result: dict) -> str:
+def render_report(result: dict, *, notes: tuple[str, ...] = ()) -> str:
     conditions = result["conditions"]
     adversarial = [c for c in conditions if c["noise_px"]]
     main = [c for c in conditions if not c["noise_px"]]
@@ -281,6 +302,9 @@ def render_report(result: dict) -> str:
             f"{b['region_metadata_json']} | {_pct(b['region_metadata_json'], b['raw_rgb'])} | "
             f"{cond['peak_alloc_bytes'] / 1e6:.1f} |"
         )
+    if notes:
+        lines += ["", "## Method / envelope notes (recorded facts)", ""]
+        lines += [f"- {note}" for note in notes]
     lines += [
         "",
         "## Reading notes (honesty rules, plan §25/§39)",
@@ -308,6 +332,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--levels", default="8,16,64,256")
     parser.add_argument("--resolutions", default="320x240,640x480,1920x1080")
     parser.add_argument("--scenes", default=",".join(DEFAULT_SCENES))
+    parser.add_argument(
+        "--adversarial", default="320x240:1:3,640x480:1:3,1920x1080:2:3",
+        help="widthxheight:min_area:frames list for the dense-noise block",
+    )
+    parser.add_argument("--note", action="append", default=[], help="fact to record in report.md")
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
@@ -320,6 +349,13 @@ def main(argv: list[str] | None = None) -> int:
         scenes=tuple(s.strip() for s in args.scenes.split(",") if s.strip()),
         frames=args.frames,
         warmup=args.warmup,
+        adversarial_specs=tuple(
+            (int(w), int(h), int(ma), int(fr))
+            for w, h, ma, fr in (
+                item.split(":") for item in args.adversarial.split(",") if item.strip()
+            )
+        ),
+        notes=tuple(args.note),
         seed=args.seed,
     )
     return 0
