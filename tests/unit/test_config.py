@@ -10,6 +10,7 @@ from visual_intensity_engine.config import (
     PipelineConfig,
     canonical_json,
     config_sha256,
+    configs_dir,
     schemas_dir,
     validate_against_schema,
 )
@@ -32,7 +33,7 @@ def test_default_config_validates_and_matches_schema():
 
 @pytest.mark.parametrize("lv", (8, 16, 32, 64, 128, 256))
 def test_shipped_config_files_validate(lv):
-    path = schemas_dir().parent / "configs" / f"quantization.uniform.l{lv:03d}.v1.json"
+    path = configs_dir() / f"quantization.uniform.l{lv:03d}.v1.json"
     cfg = PipelineConfig.load(path)
     assert cfg.quantization.levels == lv
     assert cfg.sha256() == config_sha256(cfg.to_dict())

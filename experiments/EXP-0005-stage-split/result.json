@@ -1,0 +1,616 @@
+{
+  "code_commit": "163bf39f5e9d92a10402e7e7316b124b9fb3924c",
+  "conditions": [
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 3722
+      },
+      "condition_id": "gradient-L16-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 21337167.0,
+        "mean": 20700670.0,
+        "min": 20218991.0,
+        "n": 5,
+        "p50": 20631553.0,
+        "p95": 21337167.0,
+        "p99": 21337167.0,
+        "std": 417548.43626099237
+      },
+      "height": 480,
+      "labeling_ns": {
+        "max": 21116623.0,
+        "mean": 20514174.2,
+        "min": 20069630.0,
+        "n": 5,
+        "p50": 20473082.0,
+        "p95": 21116623.0,
+        "p99": 21116623.0,
+        "std": 386700.38295114215
+      },
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15976134,
+      "records_ns": {
+        "max": 239471.0,
+        "mean": 186495.8,
+        "min": 149361.0,
+        "n": 5,
+        "p50": 164632.0,
+        "p95": 239471.0,
+        "p99": 239471.0,
+        "std": 36353.98265609973
+      },
+      "regions_per_frame": {
+        "max": 16.0,
+        "mean": 16.0,
+        "min": 16.0,
+        "n": 5,
+        "p50": 16.0,
+        "p95": 16.0,
+        "p99": 16.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 80
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 14912
+      },
+      "condition_id": "gradient-L64-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 36256032.0,
+        "mean": 34284076.4,
+        "min": 32947584.0,
+        "n": 5,
+        "p50": 34331074.0,
+        "p95": 36256032.0,
+        "p99": 36256032.0,
+        "std": 1248138.9833388908
+      },
+      "height": 480,
+      "labeling_ns": {
+        "max": 35718233.0,
+        "mean": 33792074.2,
+        "min": 32414276.0,
+        "n": 5,
+        "p50": 33896853.0,
+        "p95": 35718233.0,
+        "p99": 35718233.0,
+        "std": 1247500.091535612
+      },
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15976075,
+      "records_ns": {
+        "max": 537799.0,
+        "mean": 492002.2,
+        "min": 434221.0,
+        "n": 5,
+        "p50": 495038.0,
+        "p95": 537799.0,
+        "p99": 537799.0,
+        "std": 40492.93160738057
+      },
+      "regions_per_frame": {
+        "max": 64.0,
+        "mean": 64.0,
+        "min": 64.0,
+        "n": 5,
+        "p50": 64.0,
+        "p95": 64.0,
+        "p99": 64.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 320
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 148523
+      },
+      "condition_id": "ramp_bands-L16-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 291636420.0,
+        "mean": 270563434.2,
+        "min": 257628464.0,
+        "n": 5,
+        "p50": 263769390.0,
+        "p95": 291636420.0,
+        "p99": 291636420.0,
+        "std": 12724211.506481623
+      },
+      "height": 480,
+      "labeling_ns": {
+        "max": 287779955.0,
+        "mean": 266347250.4,
+        "min": 253793470.0,
+        "n": 5,
+        "p50": 259613288.0,
+        "p95": 287779955.0,
+        "p99": 287779955.0,
+        "std": 12711395.197564533
+      },
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 39989898,
+      "records_ns": {
+        "max": 4843672.0,
+        "mean": 4216183.8,
+        "min": 3834994.0,
+        "n": 5,
+        "p50": 4156102.0,
+        "p95": 4843672.0,
+        "p99": 4843672.0,
+        "std": 374741.9261125715
+      },
+      "regions_per_frame": {
+        "max": 640.0,
+        "mean": 640.0,
+        "min": 640.0,
+        "n": 5,
+        "p50": 640.0,
+        "p95": 640.0,
+        "p99": 640.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 3200
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 149123
+      },
+      "condition_id": "ramp_bands-L64-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 255280478.0,
+        "mean": 252980362.0,
+        "min": 249458653.0,
+        "n": 5,
+        "p50": 254354935.0,
+        "p95": 255280478.0,
+        "p99": 255280478.0,
+        "std": 2397206.4157021604
+      },
+      "height": 480,
+      "labeling_ns": {
+        "max": 251098777.0,
+        "mean": 248645386.0,
+        "min": 245498343.0,
+        "n": 5,
+        "p50": 249440201.0,
+        "p95": 251098777.0,
+        "p99": 251098777.0,
+        "std": 2147072.936468624
+      },
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 39989957,
+      "records_ns": {
+        "max": 5840277.0,
+        "mean": 4334976.0,
+        "min": 3942719.0,
+        "n": 5,
+        "p50": 3960310.0,
+        "p95": 5840277.0,
+        "p99": 5840277.0,
+        "std": 752711.1809837822
+      },
+      "regions_per_frame": {
+        "max": 640.0,
+        "mean": 640.0,
+        "min": 640.0,
+        "n": 5,
+        "p50": 640.0,
+        "p95": 640.0,
+        "p99": 640.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 3200
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 3783
+      },
+      "condition_id": "gradient-L16-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 168208425.0,
+        "mean": 160788974.0,
+        "min": 155090981.0,
+        "n": 5,
+        "p50": 157472108.0,
+        "p95": 168208425.0,
+        "p99": 168208425.0,
+        "std": 5849636.95544327
+      },
+      "height": 1080,
+      "labeling_ns": {
+        "max": 167936666.0,
+        "mean": 160562444.6,
+        "min": 154875160.0,
+        "n": 5,
+        "p50": 157256919.0,
+        "p95": 167936666.0,
+        "p99": 167936666.0,
+        "std": 5833930.209327589
+      },
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828694,
+      "records_ns": {
+        "max": 271759.0,
+        "mean": 226529.4,
+        "min": 211225.0,
+        "n": 5,
+        "p50": 215821.0,
+        "p95": 271759.0,
+        "p99": 271759.0,
+        "std": 22738.74910895496
+      },
+      "regions_per_frame": {
+        "max": 16.0,
+        "mean": 16.0,
+        "min": 16.0,
+        "n": 5,
+        "p50": 16.0,
+        "p95": 16.0,
+        "p99": 16.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 80
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 15156
+      },
+      "condition_id": "gradient-L64-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 208116153.0,
+        "mean": 201596538.4,
+        "min": 195426217.0,
+        "n": 5,
+        "p50": 201729699.0,
+        "p95": 208116153.0,
+        "p99": 208116153.0,
+        "std": 4417577.309391455
+      },
+      "height": 1080,
+      "labeling_ns": {
+        "max": 207482787.0,
+        "mean": 201034653.4,
+        "min": 194900700.0,
+        "n": 5,
+        "p50": 201108434.0,
+        "p95": 207482787.0,
+        "p99": 207482787.0,
+        "std": 4384950.052149675
+      },
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828694,
+      "records_ns": {
+        "max": 633366.0,
+        "mean": 561885.0,
+        "min": 513935.0,
+        "n": 5,
+        "p50": 525517.0,
+        "p95": 633366.0,
+        "p99": 633366.0,
+        "std": 53709.594178321626
+      },
+      "regions_per_frame": {
+        "max": 64.0,
+        "mean": 64.0,
+        "min": 64.0,
+        "n": 5,
+        "p50": 64.0,
+        "p95": 64.0,
+        "p99": 64.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 320
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 453964
+      },
+      "condition_id": "ramp_bands-L16-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 2354746847.0,
+        "mean": 2275784107.8,
+        "min": 2175207658.0,
+        "n": 5,
+        "p50": 2311360480.0,
+        "p95": 2354746847.0,
+        "p99": 2354746847.0,
+        "std": 73085641.13333696
+      },
+      "height": 1080,
+      "labeling_ns": {
+        "max": 2342259010.0,
+        "mean": 2262633766.4,
+        "min": 2160727595.0,
+        "n": 5,
+        "p50": 2297985655.0,
+        "p95": 2342259010.0,
+        "p99": 2342259010.0,
+        "std": 73246996.40247418
+      },
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 269704050,
+      "records_ns": {
+        "max": 14480063.0,
+        "mean": 13150341.4,
+        "min": 11847980.0,
+        "n": 5,
+        "p50": 13374825.0,
+        "p95": 14480063.0,
+        "p99": 14480063.0,
+        "std": 907992.4938893713
+      },
+      "regions_per_frame": {
+        "max": 1920.0,
+        "mean": 1920.0,
+        "min": 1920.0,
+        "n": 5,
+        "p50": 1920.0,
+        "p95": 1920.0,
+        "p99": 1920.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 9600
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 455764
+      },
+      "condition_id": "ramp_bands-L64-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 2622424085.0,
+        "mean": 2302900570.0,
+        "min": 2034646327.0,
+        "n": 5,
+        "p50": 2291551696.0,
+        "p95": 2622424085.0,
+        "p99": 2622424085.0,
+        "std": 187733666.56859192
+      },
+      "height": 1080,
+      "labeling_ns": {
+        "max": 2598142115.0,
+        "mean": 2288348565.6,
+        "min": 2021782261.0,
+        "n": 5,
+        "p50": 2279347050.0,
+        "p95": 2598142115.0,
+        "p99": 2598142115.0,
+        "std": 183816633.3795247
+      },
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 269704229,
+      "records_ns": {
+        "max": 24281970.0,
+        "mean": 14552004.4,
+        "min": 11624509.0,
+        "n": 5,
+        "p50": 12204646.0,
+        "p95": 24281970.0,
+        "p99": 24281970.0,
+        "std": 4883829.15385289
+      },
+      "regions_per_frame": {
+        "max": 1920.0,
+        "mean": 1920.0,
+        "min": 1920.0,
+        "n": 5,
+        "p50": 1920.0,
+        "p95": 1920.0,
+        "p99": 1920.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 9600
+      },
+      "width": 1920
+    }
+  ],
+  "created_at_utc": "2026-09-18T09:09:54.286Z",
+  "environment": {
+    "cpu_count": 2,
+    "cpu_model": "Intel(R) Xeon(R) Processor @ 2.60GHz",
+    "numpy_version": "2.4.6",
+    "platform": "Linux-x86_64/6.1.158+",
+    "python_version": "3.11.2"
+  },
+  "experiment_id": "EXP-0005",
+  "hypotheses": [
+    "H3 (indirect: representation size for objects is measured; accuracy unclaimed)",
+    "H5 (partial: cost of deterministic identity is included; robustness is Phase 3)"
+  ],
+  "measurement_method": {
+    "clock": "time.perf_counter_ns (monotonic)",
+    "memory": "tracemalloc peak of the extraction call (label map + records), measured in a separate untimed pass: tracing inflates latency ~1.6x, so timings are untraced",
+    "timer_resolution_note": "ns resolution, single-threaded; extraction only (grayscale+quantization excluded, they are EXP-0001), split into labeling_ns + records_ns; region_metadata_json is the exact serialized size of regions.json records per frame"
+  },
+  "repeats_per_condition": 5,
+  "research_questions": [
+    "Q4",
+    "Q7",
+    "Q8"
+  ],
+  "schema": "vie.object-benchmark-result/1",
+  "title": "Phase-2 stage split: labeling vs record construction (untraced latency)",
+  "warmup_frames": 2
+}

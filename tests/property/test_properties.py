@@ -16,7 +16,7 @@ from visual_intensity_engine.intensity.vocabulary import IntensityVocabulary
 from visual_intensity_engine.pipeline import process_frame
 from visual_intensity_engine.preprocessing.grayscale import to_grayscale
 from visual_intensity_engine.preprocessing.quantization import quantize_uniform
-from visual_intensity_engine.serialization.store import FrameStoreWriter, write_npz_deterministic
+from visual_intensity_engine.serialization.store import write_npz_deterministic
 
 from ..conftest import SUPPORTED_LEVELS
 
@@ -114,3 +114,53 @@ def test_frame_writer_unaffected_by_extra_whitespace_in_config(tmp_path):
     h2 = config_sha256(json.loads(text_a))
     h3 = config_sha256(json.loads(text_b))
     assert h1 == h2 == h3
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 properties (VIE-SPEC-REP 1.1.0 §R2–§R6)
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize("seed", [1, 2, 3])
+def test_region_invariants_hold_for_random_maps(seed):
+    from visual_intensity_engine.objects.labeling import label_level_uniform_regions
+    from visual_intensity_engine.objects.objects_config import ObjectsConfig
+
+    rng = np.random.default_rng(seed)
+    height, width = int(rng.integers(1, 30)), int(rng.integers(1, 30))
+    levels = int(rng.integers(2, 9))
+    min_area = int(rng.integers(1, 6))
+    qmap = rng.integers(0, levels, size=(height, width)).astype(np.int32)
+    result = label_level_uniform_regions(qmap, levels, ObjectsConfig(min_area=min_area))
+
+    # §R6.3: the frame is fully covered
+    assert sum(r.area for r in result.regions) + result.dropped_pixels == height * width
+    # §R4.2: ids are contiguous 1..n in the label map
+    labels = set(np.unique(result.labels).tolist())
+    assert labels <= set(range(len(result.regions) + 1))
+    assert labels == set(range(len(result.regions) + 1)) or 0 in labels
+    # §R2: every region has exactly one level, and its pixels all carry that level
+    for index, region in enumerate(result.regions):
+        ys, xs = np.nonzero(result.labels == index + 1)
+        assert ys.size == region.area
+        assert np.all(qmap[ys, xs] == region.level)
+        assert (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1) == (
+            region.x0, region.y0, region.x1, region.y1,
+        )
+    # min_area is honoured exactly
+    assert all(r.area >= min_area for r in result.regions)
+
+
+@pytest.mark.parametrize("seed", [4, 5])
+def test_production_and_reference_labelers_agree(seed):
+    from visual_intensity_engine.objects.labeling import (
+        label_level_uniform_regions,
+        label_level_uniform_regions_reference,
+    )
+    from visual_intensity_engine.objects.objects_config import ObjectsConfig
+
+    rng = np.random.default_rng(seed)
+    qmap = rng.integers(0, 5, size=(int(rng.integers(1, 14)), int(rng.integers(1, 14)))).astype(np.int32)
+    config = ObjectsConfig(min_area=2)
+    fast = label_level_uniform_regions(qmap, 8, config)
+    ref = label_level_uniform_regions_reference(qmap, 8, config)
+    assert np.array_equal(fast.labels, ref.labels)
+    assert fast.regions == ref.regions

@@ -9,8 +9,9 @@ strict mode raise SourceError (VIE-SPEC-REP §7.4).
 from __future__ import annotations
 
 import logging
+import time
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 import numpy as np
 
@@ -20,10 +21,14 @@ from .framesource import FrameRecord, check_timestamp_sequence
 
 logger = logging.getLogger("vie.input.video")
 
+# Whole-file provenance hashing is required (VIE-SPEC-REP §10.3); past this size
+# the cost stops being negligible, so it is announced explicitly (plan §3.18).
+LARGE_INPUT_WARN_BYTES = 512 * 1024 * 1024
+
 try:  # optional dependency
     import cv2
 except Exception:  # pragma: no cover
-    cv2 = None
+    cv2 = None  # type: ignore[assignment]
 
 
 def _require_cv2() -> None:
@@ -63,6 +68,26 @@ class VideoFileSource:
             raise SourceError(f"video reports invalid geometry {self.width}x{self.height}: {self.path}")
 
     def describe(self) -> dict:
+        """Input description, including the SHA-256 provenance checksum.
+
+        Cost note: the checksum covers the **entire file** and is therefore
+        I/O-bound (~1–2 GB/s on local SSD, minutes on multi-GB network mounts).
+        VIE-SPEC-REP §10.3 requires it for provenance, so it is not skippable;
+        the size is logged at INFO before hashing and files above
+        `LARGE_INPUT_WARN_BYTES` also raise a WARNING so the cost is never a
+        surprise. (A partial-hash mode would need a schema version increment per
+        §8.2 and is deliberately not invented here.)
+        """
+        size = self.path.stat().st_size
+        if size >= LARGE_INPUT_WARN_BYTES:
+            logger.warning(
+                "input file is %.2f GiB; computing its full SHA-256 for provenance "
+                "(I/O-bound, this may take a while): %s",
+                size / (1 << 30),
+                self.path,
+            )
+        else:
+            logger.info("hashing input file (%d bytes) for provenance", size)
         return {
             "kind": "video_file",
             "name": self.path.name,
@@ -145,21 +170,40 @@ class CameraSource:
         }
 
     def frames(self) -> Iterator[FrameRecord]:
+        """Yield camera frames with media time from a monotonic clock.
+
+        `timestamp_us` is cumulative media time in µs since the first delivered
+        frame (VIE-SPEC-REP §7.2, which conventionally starts at 0). Cameras
+        expose no container timestamps, so `time.monotonic_ns()` deltas are the
+        honest measurement available; unlike a hard-coded zero they let the
+        shared sequence checker detect duplicates and stalls (§7.4). Wall-clock
+        time is recorded as provenance only (§7.3).
+        """
         index = 0
+        first_ns: int | None = None
+        timestamps: list[int] = []
         while True:
             ok, bgr = self._cap.read()
             if not ok:
                 logger.warning("camera frame grab failed at index %d; stopping", index)
-                return
+                break
+            now_ns = time.monotonic_ns()
+            if first_ns is None:
+                first_ns = now_ns  # media time starts at 0 on the first delivered frame
+            timestamp_us = (now_ns - first_ns) // 1000
+            timestamps.append(int(timestamp_us))
             rgb = np.ascontiguousarray(bgr[..., ::-1])
             yield FrameRecord(
                 data=rgb,
                 frame_index=index,
                 source_frame_id=f"cam-{index:06d}",
-                timestamp_us=0,  # cameras without monotonic clocks: wall time carries timing
+                timestamp_us=int(timestamp_us),
                 wall_time_utc=utc_now_rfc3339(),
             )
             index += 1
+        for warning in check_timestamp_sequence(timestamps, None):
+            if "non-monotonic" in warning or "duplicate" in warning:
+                logger.warning("camera timestamp anomaly: %s", warning)
 
     def close(self) -> None:
         if getattr(self, "_cap", None) is not None:
@@ -175,6 +219,7 @@ def module_info() -> dict:
         "config_schema": "max_frames, strict",
         "error_behavior": "SourceError on open failure, corrupt file, non-monotonic timestamps (strict)",
         "logging_behavior": "WARNING on EOF anomalies and camera failures",
-        "performance_expectations": "decode-bound; ≥30 fps for 720p H.264 on 1 core",
+        "performance_expectations": "input-bound: decode rate and provenance hashing depend on "
+                                    "codec/disk; no rate claimed",
         "test_coverage": "tests/edge/test_fault_injection.py (corrupt/missing files)",
     }

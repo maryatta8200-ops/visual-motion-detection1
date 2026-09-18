@@ -99,6 +99,7 @@ def module_info() -> dict:
         "config_schema": "QuantizationSettings (strategy/levels/scope/boundary/implementation)",
         "error_behavior": "ConfigError for unavailable/unknown strategies or bad level counts",
         "logging_behavior": "silent (pure function)",
-        "performance_expectations": "~1-2 ms/frame at 1080p (float64 floor path)",
+        "performance_expectations": "measured (EXP-0001): p50 0.16 ms 320x240, 0.63 ms 640x480, "
+                                    "7.5 ms 1920x1080; independent of L",
         "test_coverage": "tests/unit/test_quantization.py, tests/property/, tests/edge/",
     }

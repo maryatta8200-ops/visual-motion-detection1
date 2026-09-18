@@ -144,3 +144,28 @@ repeated runs"): ✅ — synthetic scenes and a real mp4 round-trip both pass wi
 no critical or high-severity defects open (plan §35). Gate to Phase 2 (intensity
 objects) is hereby unlocked, contingent on maintainer review of this report.
 Details: `docs/decisions/DEC-0001-phase1-acceptance.md`.
+
+---
+
+## Addendum A — audit-driven revision R1 (2026-09-18)
+
+The sections above remain the record of the **acceptance run at `9e338fc`** (170 tests,
+16–17 Sep 2026) and are not rewritten. A post-acceptance external audit produced
+`DEC-0002` (see `docs/decisions/decision_log.md` and
+`docs/reviews/2026-09-18-external-audit-response.md`). Summary of what changed and what did
+not:
+
+- **Unchanged:** `docs/MASTER_PLAN.md`, `VIE-SPEC-REP` 1.0.0, all four JSON Schemas and
+  their versions, the golden hashes (`tests/regression/golden/hashes.json`, store npz
+  `bfcd8492…`), quantization/grayscale semantics, and the Phase-2 gate (still closed).
+- **Changed (engineering hygiene, no representation change):** viewer binds loopback by
+  default with Host-header validation and explicit exposure logging; store writer streams
+  frames (bounded memory) and writes each bundle artifact once; schemas ship as package data
+  (repo-root `schemas/` are symlinks); camera media timestamps are monotonic cumulative µs;
+  camera batch runs require `--max-frames`; every `module_info()` performance string is
+  measured or explicitly disclaimed; CI + ruff + mypy gates added.
+- **Test suite after R1:** **215 passed** — unit 132, integration 36, edge 20, property 19,
+  regression 5, performance 3 (`.venv/bin/python -m pytest tests -q`, 2026-09-18).
+- **Known limitations §9 status:** (2) float64 luminance cost unchanged and still a Phase 8
+  concern; (4) camera timestamps **resolved** in R1; (5) viewer now has automated HTTP
+  coverage but remains exploratory and excluded from benchmark output; others unchanged.

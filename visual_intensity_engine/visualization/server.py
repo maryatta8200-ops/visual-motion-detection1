@@ -7,6 +7,12 @@ UTC timestamps to `logs/viewer_interactions.jsonl`.
 
 Boundary rule: this viewer is for human inspection; its outputs are NOT
 benchmark data. Every page displays that warning (plan §21).
+
+Security rule (plan §41): the viewer is an unauthenticated research tool, so it
+binds **127.0.0.1 by default** and rejects requests whose `Host` header is not a
+localhost name while it is bound to a loopback address (DNS-rebinding defence).
+Network exposure is an explicit opt-in (`--host 0.0.0.0`, plus `--allowed-host`
+when a proxy rewrites `Host`); the server logs a warning when it starts exposed.
 """
 
 from __future__ import annotations
@@ -21,13 +27,42 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from ..config import InputDomainSettings, PipelineConfig, QuantizationSettings
+from ..config import PipelineConfig
 from ..intensity.vocabulary import IntensityVocabulary
 from ..preprocessing.grayscale import to_grayscale
 from ..preprocessing.quantization import quantize
-from .render import colorize, deterministic_palette, to_uint8_gray as _g8, _as_uint8_rgb
+from .render import _as_uint8_rgb, colorize, deterministic_palette
+from .render import to_uint8_gray as _g8
 
 logger = logging.getLogger("vie.visualization.server")
+
+LOOPBACK_BIND_HOSTS = frozenset({"127.0.0.1", "::1", "localhost", "localhost.localdomain"})
+
+
+def hostname_from_host_header(value: str | None) -> str:
+    """Host header → lowercase hostname, dropping any port and IPv6 brackets."""
+    text = (value or "").strip().lower()
+    if text.startswith("["):  # [::1]:8000
+        return text[1:].split("]", 1)[0]
+    if text.count(":") == 1:
+        name, _, port = text.partition(":")
+        if port.isdigit():
+            return name
+    return text
+
+
+def is_loopback_hostname(name: str) -> bool:
+    """True for localhost names and the whole 127.0.0.0/8 block (plus ::1)."""
+    if name in {"localhost", "::1"} or name.endswith(".localhost"):
+        return True
+    parts = name.split(".")
+    if len(parts) == 4 and parts[0] == "127":
+        return all(p.isdigit() and 0 <= int(p) <= 255 for p in parts)
+    return False
+
+
+def is_loopback_bind(host: str) -> bool:
+    return host.strip().lower() in LOOPBACK_BIND_HOSTS or is_loopback_hostname(host.strip().lower())
 
 _HTML = """<!doctype html>
 <html><head><meta charset="utf-8"><title>VIE live viewer (exploratory)</title>
@@ -40,12 +75,15 @@ _HTML = """<!doctype html>
 </style></head>
 <body>
 <h1>VIE live intensity viewer — Phase 1</h1>
-<div class="warn">EXPLORATORY VISUALIZATION — NOT BENCHMARK OUTPUT. Parameter changes via links are logged with UTC timestamps.</div>
+<div class="warn">EXPLORATORY VISUALIZATION — NOT BENCHMARK OUTPUT.<br>
+ Parameter changes via links are logged with UTC timestamps.</div>
 <p>
  Levels: {level_links} | Scenes: {scene_links} | FPS:
  {fps_links} | <a href="/" onclick="return false;">config:</a> <code>{config_summary}</code>
 </p>
-<p><img class="panel" src="/stream.mjpg"><img class="panel" src="/stream.mjpg?mode=gray"><img class="panel" src="/stream.mjpg?mode=quantized"></p>
+<p><img class="panel" src="/stream.mjpg">
+<img class="panel" src="/stream.mjpg?mode=gray">
+<img class="panel" src="/stream.mjpg?mode=quantized"></p>
 <h2>Palette legend</h2>
 <img src="/legend.png" style="max-width:360px">
 <h2>Live metrics (updated every second)</h2>
@@ -81,10 +119,18 @@ class ViewerState:
             ):
                 if key in kwargs and kwargs[key] is not None:
                     val = kwargs[key]
-                    if key == "levels":
-                        val = int(val)
-                    if key == "fps":
-                        val = float(val)
+                    try:
+                        if key == "levels":
+                            val = int(val)
+                        if key == "fps":
+                            val = float(val)
+                    except (TypeError, ValueError):
+                        # unparsable query parameter: ignore it, never drop the connection
+                        logger.warning("ignoring invalid %s=%r in viewer query", key, kwargs[key])
+                        continue
+                    if key == "fps" and not 0.1 <= val <= 240.0:
+                        logger.warning("ignoring out-of-range fps=%r in viewer query", val)
+                        continue
                     if allowed is not None and val not in allowed:
                         continue
                     if getattr(self, key) != val:
@@ -136,22 +182,70 @@ def _make_source(scene: str, levels: int, fps: float, seed: int):
 
 
 class MJPEGServer:
-    """Minimal threaded HTTP server: dashboard + MJPEG streams + state.json."""
+    """Minimal threaded HTTP server: dashboard + MJPEG streams + state.json.
 
-    def __init__(self, *, host: str = "0.0.0.0", port: int = 8000, seed: int = 0, log_path: Path):
+    `allowed_hosts` lists extra Host-header hostnames accepted while bound to a
+    loopback address (e.g. a tunnel or preview proxy that forwards its own host).
+    When bound to a non-loopback address, every Host is accepted **unless**
+    `allowed_hosts` is given, in which case only those names are.
+    """
+
+    def __init__(
+        self,
+        *,
+        host: str = "127.0.0.1",
+        port: int = 8000,
+        seed: int = 0,
+        log_path: Path,
+        allowed_hosts: tuple[str, ...] = (),
+    ):
         from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
         self.state = ViewerState(
             scene="moving_square", levels=16, fps=30.0, seed=seed, log_path=log_path
         )
         self.config = PipelineConfig.default(levels=16)
+        self.loopback_only = is_loopback_bind(host)
+        self.allowed_hosts = tuple(h.strip().lower() for h in allowed_hosts if h.strip())
         viewer = self
 
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, fmt, *args):  # quiet default access log
                 logger.debug("%s %s", self.address_string(), fmt % args)
 
+            def _host_allowed(self) -> bool:
+                name = hostname_from_host_header(self.headers.get("Host"))
+                if is_loopback_hostname(name):
+                    return True
+                if name in viewer.allowed_hosts:
+                    return True
+                if viewer.loopback_only:
+                    return False
+                # explicit non-loopback bind: open unless the operator narrowed it
+                return not viewer.allowed_hosts
+
+            def _forbidden(self) -> None:
+                logger.warning(
+                    "rejected request with Host=%r on %s bind",
+                    self.headers.get("Host"),
+                    "loopback" if viewer.loopback_only else "non-loopback",
+                )
+                body = (
+                    "403 — Host header rejected. The viewer accepts localhost names only "
+                    "while bound to 127.0.0.1; start it with --host 0.0.0.0 (and "
+                    "--allowed-host <name> if a proxy rewrites Host) for network access.\n"
+                ).encode()
+                self.send_response(403)
+                self.send_header("Content-Type", "text/plain; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("X-Content-Type-Options", "nosniff")
+                self.end_headers()
+                self.wfile.write(body)
+
             def do_GET(self):
+                if not self._host_allowed():
+                    self._forbidden()
+                    return
                 path, _, query = self.path.partition("?")
                 params = dict(kv.split("=", 1) for kv in query.split("&") if "=" in kv)
                 if path == "/":
@@ -163,7 +257,8 @@ class MJPEGServer:
                             f'<a href="/?levels={lv}">{lv}</a>' for lv in (8, 16, 32, 64, 128, 256)
                         ),
                         scene_links=" ".join(
-                            f'<a href="/?scene={s}">{s}</a>' for s in ("moving_square", "gradient", "ramp_bands", "static")
+                            f'<a href="/?scene={s}">{s}</a>'
+                            for s in ("moving_square", "gradient", "ramp_bands", "static")
                         ),
                         fps_links=" ".join(f'<a href="/?fps={f}">{f}</a>' for f in (5, 15, 30, 60)),
                         config_summary=json.dumps(viewer.state.snapshot(), sort_keys=True),
@@ -179,6 +274,8 @@ class MJPEGServer:
                     self.send_response(200)
                     self.send_header("Content-Type", "application/json")
                     self.send_header("Content-Length", str(len(body)))
+                    self.send_header("X-Content-Type-Options", "nosniff")
+                    self.send_header("Cache-Control", "no-store")
                     self.end_headers()
                     self.wfile.write(body)
                 elif path == "/legend.png":
@@ -216,7 +313,11 @@ class MJPEGServer:
                         from PIL import ImageDraw
 
                         draw = ImageDraw.Draw(img)
-                        draw.text((4, 2), f"frame={rec.frame_index} ts_us={rec.timestamp_us} L={viewer.state.levels}", fill=(255, 255, 80))
+                        draw.text(
+                            (4, 2),
+                            f"frame={rec.frame_index} ts_us={rec.timestamp_us} L={viewer.state.levels}",
+                            fill=(255, 255, 80),
+                        )
                         buf = io.BytesIO()
                         img.save(buf, format="JPEG", quality=80)
                         try:
@@ -238,7 +339,21 @@ class MJPEGServer:
                     self.end_headers()
 
         self._server = ThreadingHTTPServer((host, port), Handler)
-        self.host, self.port = host, port
+        # port 0 (ephemeral) means the effective port must be read back from the socket
+        self.host = host
+        self.port = int(self._server.server_address[1])
+        if not self.loopback_only:
+            logger.warning(
+                "viewer bound to %s:%d — reachable from the network and it has NO authentication; "
+                "expose only on a trusted network or through a trusted tunnel (plan §41)",
+                host,
+                self.port,
+            )
+
+    @property
+    def httpd(self):
+        """The underlying ThreadingHTTPServer (for tests / embedding)."""
+        return self._server
 
     def serve_forever(self):  # pragma: no cover
         logger.info("live viewer on http://%s:%d (exploratory only)", self.host, self.port)
@@ -249,9 +364,18 @@ class MJPEGServer:
         self._server.server_close()
 
 
-def serve(host: str = "0.0.0.0", port: int = 8000, *, seed: int = 0, log_path: Path | None = None) -> MJPEGServer:
+def serve(
+    host: str = "127.0.0.1",
+    port: int = 8000,
+    *,
+    seed: int = 0,
+    log_path: Path | None = None,
+    allowed_hosts: tuple[str, ...] = (),
+) -> MJPEGServer:
     log_path = log_path or Path("logs/viewer_interactions.jsonl")
-    server = MJPEGServer(host=host, port=port, seed=seed, log_path=log_path)
+    server = MJPEGServer(
+        host=host, port=port, seed=seed, log_path=log_path, allowed_hosts=allowed_hosts
+    )
     return server
 
 
@@ -262,8 +386,11 @@ def module_info() -> dict:
         "input_schema": "synthetic source + PipelineConfig (interactive overrides logged)",
         "output_schema": "HTTP dashboard: MJPEG panels, palette legend, state.json",
         "config_schema": "levels/scene/fps via query params (logged, exploratory)",
-        "error_behavior": "per-connection try/except; server keeps serving",
-        "logging_behavior": "interaction log logs/viewer_interactions.jsonl (UTC timestamps)",
-        "performance_expectations": "60+ fps at 320x240 per stream",
-        "test_coverage": "smoke-tested manually; NOT used for benchmark output (plan §21)",
+        "error_behavior": "per-connection try/except; server keeps serving; 403 on "
+                          "non-localhost Host while loopback-bound",
+        "logging_behavior": "interaction log logs/viewer_interactions.jsonl (UTC timestamps); "
+                            "warning when bound beyond loopback",
+        "performance_expectations": "no target claimed (plan §21): exploratory viewer, "
+                                    "excluded from benchmark measurement",
+        "test_coverage": "tests/integration/test_viewer_server.py (HTTP routes, Host validation, interaction log)",
     }

@@ -65,7 +65,7 @@ def test_float_input_in_range_ok_out_of_range_strict_raises():
 
     y, _, clipped = to_grayscale(bad, InputDomainSettings(float_range_policy="clip"))
     assert clipped >= 1
-    assert 0.0 <= y.min() and y.max() <= 1.0
+    assert y.min() >= 0.0 and y.max() <= 1.0
 
 
 def test_nan_strict_raises_with_location():

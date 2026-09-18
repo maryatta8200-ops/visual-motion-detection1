@@ -13,6 +13,7 @@ select via config (dependency injection, plan §34).
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 
 import numpy as np
 
@@ -33,7 +34,10 @@ LUMA_COEFFICIENTS = {
     "average": (1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0),
 }
 
-_IMPLEMENTATIONS: dict[str, "callable"] = {}
+# (frame, settings) -> (y_float64, non_finite_coerced, clipped_to_range)
+GrayscaleImplementation = Callable[[np.ndarray, InputDomainSettings], tuple[np.ndarray, int, int]]
+
+_IMPLEMENTATIONS: dict[str, GrayscaleImplementation] = {}
 
 
 def register_implementation(name: str, fn) -> None:
@@ -140,7 +144,8 @@ def module_info() -> dict:
         "config_schema": "InputDomainSettings (luma_standard, alpha, non-finite, float-range)",
         "error_behavior": "FrameValidationError / NonFinitePixelError (strict policies)",
         "logging_behavior": "WARNING on coerce/clip events, via logger 'vie.preprocessing.grayscale'",
-        "performance_expectations": "~1-3 ms/frame at 1080p float64 (reference, CPU)",
+        "performance_expectations": "measured (EXP-0001): p50 2.2 ms 320x240, 8.8 ms 640x480, "
+                                    "76 ms 1920x1080 (float64 reference, single core)",
         "test_coverage": "tests/unit/test_grayscale.py, tests/edge/",
         "implementations": sorted(_IMPLEMENTATIONS),
     }

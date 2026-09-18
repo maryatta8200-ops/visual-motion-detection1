@@ -1,0 +1,90 @@
+name: CI
+
+# Gate for every push/PR: the 170-test Phase-1 acceptance suite (plus the 2026-09-18
+# audit hardening tests), lint, types, and a wheel-install smoke test that proves the
+# packaged schemas work outside a source checkout.
+on:
+  push:
+    branches: ["main", "arena/**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: tests (py${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # 3.11 uses requirements.txt: the exact environment pinned for the
+          # recorded Phase-0/1 acceptance runs (docs/phase-1/phase1_report.md §6).
+          - python: "3.11"
+            install: python -m pip install -r requirements.txt
+          # 3.12 checks forward compatibility with the declared version ranges.
+          - python: "3.12"
+            install: python -m pip install -e '.[dev]'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - name: Install (${{ matrix.python }})
+        run: |
+          python -m pip install --upgrade pip
+          ${{ matrix.install }}
+          python -m pip install -e . --no-deps
+      - name: Full test suite (unit/property/integration/edge/fault/regression/performance)
+        run: python -m pytest tests -q
+      - name: Deterministic self-test (replay + round-trip)
+        run: vie self-test --levels 16
+
+  quality:
+    name: lint + types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install tools (pinned) with the declared dependencies
+        # mypy results depend on the installed stubs (e.g. opencv for the optional
+        # `video` extra), so the quality job installs the same dependency set a
+        # contributor gets from scripts/setup_env.sh + '.[dev]'.
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m pip install "ruff==0.16.8" "mypy==2.3.1"
+      - name: Ruff
+        run: ruff check visual_intensity_engine tests scripts
+      - name: Mypy
+        run: mypy visual_intensity_engine
+
+  packaging:
+    name: wheel install (schemas outside the checkout)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Build wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --wheel --outdir dist .
+      - name: Install the wheel into a scratch venv and use it outside the repo
+        run: |
+          python -m venv /tmp/wheel-venv
+          /tmp/wheel-venv/bin/pip install --quiet dist/*.whl
+          mkdir -p /tmp/wheel-run && cd /tmp/wheel-run
+          /tmp/wheel-venv/bin/vie process --input synthetic:moving_square \
+            --levels 16 --max-frames 4 --previews 0 --output /tmp/wheel-run/store
+          /tmp/wheel-venv/bin/vie validate --target /tmp/wheel-run/store
+          /tmp/wheel-venv/bin/vie self-test --levels 16

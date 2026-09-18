@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 
-import numpy as np
 import pytest
 
 from visual_intensity_engine.config import PipelineConfig
@@ -16,7 +15,7 @@ from visual_intensity_engine.errors import CompatibilityError, SerializationErro
 from visual_intensity_engine.input.synthetic import SyntheticSource
 from visual_intensity_engine.intensity.vocabulary import IntensityVocabulary
 from visual_intensity_engine.pipeline import run_pipeline
-from visual_intensity_engine.serialization.store import FrameStoreReader, FrameStoreWriter
+from visual_intensity_engine.serialization.store import FrameStoreReader
 
 
 def _run(outdir, *, scene="moving_square", levels=16, n=12, seed=42, size=(64, 48)):
@@ -31,7 +30,7 @@ def test_full_round_trip_exact(tmp_path):
     maps = reader.load_all()
     assert len(maps) == 12
     src = SyntheticSource("moving_square", (64, 48), 12, seed=42, levels=16)
-    for rec, m in zip(src.frames(), maps):
+    for rec, m in zip(src.frames(), maps, strict=True):
         assert m.frame.frame_index == rec.frame_index
         assert m.frame.timestamp_us == rec.timestamp_us
     # manifest/config coherence

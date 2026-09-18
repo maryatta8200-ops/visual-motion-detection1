@@ -16,7 +16,7 @@ def test_deterministic_across_instances():
     a = frames_of(SyntheticSource("moving_square", (64, 48), 10, seed=42))
     b = frames_of(SyntheticSource("moving_square", (64, 48), 10, seed=42))
     assert len(a) == len(b)
-    for (da, ta, ia), (db, tb, ib) in zip(a, b):
+    for (da, ta, ia), (db, tb, ib) in zip(a, b, strict=True):
         assert da.tobytes() == db.tobytes()
         assert ta == tb and ia == ib
 

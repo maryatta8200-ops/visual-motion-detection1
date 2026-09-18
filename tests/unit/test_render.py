@@ -33,7 +33,9 @@ def test_colorize_exact_lookup(levels):
     assert img.shape == (2, 2, 3)
     assert img[0, 0].tolist() == list(palette[0])
     assert img[0, 1].tolist() == list(palette[levels - 1])
-    with pytest.raises(Exception):
+    from visual_intensity_engine.errors import FrameValidationError
+
+    with pytest.raises(FrameValidationError):
         colorize(np.array([[levels]], np.uint8), palette)  # id out of range
 
 

@@ -9,9 +9,9 @@ traceable to its frame (plan §2). The per-frame core is `process_frame`;
 
 from __future__ import annotations
 
-import json
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -26,7 +26,7 @@ from .metrics import summarize
 from .preprocessing.grayscale import to_grayscale
 from .preprocessing.quantization import quantize
 from .provenance import capture_provenance
-from .serialization.store import FrameStoreWriter, sha256_file
+from .serialization.store import FrameStoreWriter
 
 logger = logging.getLogger("vie.pipeline")
 
@@ -101,7 +101,8 @@ class PipelineResult:
     warnings: list[str] = field(default_factory=list)
 
 
-FrameObserver = callable  # (frame_index, raw, gray, qmap) -> None
+# (frame_index, raw_rgb, gray_float64, quantized_map) -> None
+FrameObserver = Callable[[int, np.ndarray, np.ndarray, np.ndarray], None]
 
 
 def run_pipeline(
@@ -171,22 +172,8 @@ def run_pipeline(
         warnings.append(msg)
         logger.warning(msg)
 
-    manifest = writer.close()
-    duration = time.perf_counter() - started
-    manifest["provenance"]["duration_s"] = round(duration, 6)
-    (outdir / "manifest.json").write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
-    checksums = {
-        "algorithm": "sha256",
-        "artifacts": {
-            "intensity_maps.npz": sha256_file(outdir / "intensity_maps.npz"),
-            "manifest.json": sha256_file(outdir / "manifest.json"),
-        },
-    }
-    (outdir / "checksums.json").write_text(
-        json.dumps(checksums, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    manifest = writer.close(duration_s=time.perf_counter() - started)
+    duration = manifest["provenance"]["duration_s"]
     logger.info("pipeline done: %d frame(s), %d warning(s), %.2fs", n_seen, len(warnings), duration)
     return PipelineResult(outdir=outdir, manifest=manifest, metrics=metrics.summary(), warnings=warnings)
 
@@ -205,6 +192,8 @@ def module_info() -> dict:
         "config_schema": "PipelineConfig (schemas/pipeline_config.schema.json)",
         "error_behavior": "SourceError/FrameValidationError/ConfigError propagated; strict early-end raises",
         "logging_behavior": "INFO summaries on 'vie.pipeline'",
-        "performance_expectations": ">60 fps at 1080p reference implementation",
-        "test_coverage": "tests/integration/, tests/property/, tests/regression/",
+        "performance_expectations": "measured (EXP-0001): end-to-end p50 2.4 ms 320x240, "
+                                    "9.5 ms 640x480, 84 ms 1920x1080 single-core "
+                                    "(float64 luminance dominates); no target claimed",
+        "test_coverage": "tests/integration/, tests/property/, tests/regression/, tests/unit/test_module_info.py",
     }

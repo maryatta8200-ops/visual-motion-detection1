@@ -78,7 +78,7 @@ class IntensityVocabulary:
 
     # ------------------------------------------------------------------
     @classmethod
-    def build_uniform(cls, levels: int, *, luma_standard: str = "bt601", palette_seed: int = 0) -> "IntensityVocabulary":
+    def build_uniform(cls, levels: int, *, luma_standard: str = "bt601", palette_seed: int = 0) -> IntensityVocabulary:
         if levels < 2 or levels > 256:
             raise ValueError(f"levels must be in [2,256], got {levels}")
         width = 1.0 / levels
@@ -149,7 +149,7 @@ class IntensityVocabulary:
             raise IndexError(f"level {level} outside [0, {self.levels - 1}]")
         return self.tokens[level]
 
-    def compatible_with(self, other: "IntensityVocabulary") -> bool:
+    def compatible_with(self, other: IntensityVocabulary) -> bool:
         return (
             self.strategy == other.strategy
             and self.levels == other.levels
@@ -158,7 +158,7 @@ class IntensityVocabulary:
             and self.source_domain == other.source_domain
         )
 
-    def require_compatible(self, other: "IntensityVocabulary", *, context: str) -> None:
+    def require_compatible(self, other: IntensityVocabulary, *, context: str) -> None:
         if not self.compatible_with(other):
             raise CompatibilityError(
                 f"{context}: vocabulary mismatch — stored={other.vocabulary_version} "
@@ -203,7 +203,7 @@ class IntensityVocabulary:
         return text
 
     @classmethod
-    def from_dict(cls, d: dict, *, validate: bool = True) -> "IntensityVocabulary":
+    def from_dict(cls, d: dict, *, validate: bool = True) -> IntensityVocabulary:
         if validate:
             validate_against_schema(d, schemas_dir() / SCHEMA_NAME, what="intensity vocabulary")
         tokens = tuple(IntensityToken(**t) for t in d["tokens"])

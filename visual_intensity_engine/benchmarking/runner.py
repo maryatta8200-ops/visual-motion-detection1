@@ -1,27 +1,27 @@
-"""Quantization baseline benchmark (EXP-0001).
+"""Phase-1 quantization baseline benchmark (EXP-0001, plan §7/§19/§36).
 
-Measures grayscale and quantization latency + memory + representation sizes
-across level counts and resolutions, with explicit warm-up and multiple
-repetitions (plan §19, §36). Machine-readable result validated against
-`schemas/benchmark_result.schema.json`; also emits a human-readable report.
+Measures the Phase-1 stages — grayscale conversion and uniform quantization — across
+resolutions and level counts on deterministic synthetic scenes.
 
-This is a BASELINE of the reference implementation — not a claim of advantage
-(plan §39: no superiority claims without comparisons).
+Method (explicit, plan §36): latency is measured with ``time.perf_counter_ns`` and
+**tracemalloc inactive** — tracing inflates this allocation-heavy code (measured 1.36x-16x
+on this codebase; see the EXP-0002/EXP-0003 reports), so traced timings are never reported
+as latency. The memory peak is taken in a *separate, untimed* pass on one representative
+frame (the last), and ``measurement_method`` says so.
+
+EXP-0001's original run timed with tracing active; EXP-0003 re-measures the same conditions
+with this method so Phase-1 and Phase-2 costs are comparable.
 """
 
 from __future__ import annotations
 
 import argparse
-import json
 import logging
 import time
 from pathlib import Path
 
-import numpy as np
-
 from ..config import InputDomainSettings, QuantizationSettings
 from ..input.synthetic import SyntheticSource
-from ..intensity.vocabulary import IntensityVocabulary
 from ..metrics import summarize
 from ..preprocessing.grayscale import to_grayscale
 from ..preprocessing.quantization import quantize
@@ -55,19 +55,24 @@ def measure_condition(
     import tracemalloc
 
     for i, record in enumerate(records):
-        tracemalloc.start()
         t0 = time.perf_counter_ns()
         y, _, _ = to_grayscale(record.data, input_domain)
         t1 = time.perf_counter_ns()
         q = quantize(y, QuantizationSettings(levels=levels))
         t2 = time.perf_counter_ns()
-        _, peak = tracemalloc.get_traced_memory()
-        tracemalloc.stop()
-        peak_alloc = max(peak_alloc, peak)
         if i >= warmup:
             gray_times.append(t1 - t0)
             quant_times.append(t2 - t1)
             e2e_times.append(t2 - t0)
+
+    # Memory pass: separate and untimed, so the reported peak never contaminates the
+    # reported latency (the same split as the Phase-2 runner).
+    tracemalloc.start()
+    y, _, _ = to_grayscale(records[-1].data, input_domain)
+    quantize(y, QuantizationSettings(levels=levels))
+    _, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    peak_alloc = int(peak)
 
     assert q.shape == (height, width)
     return {
@@ -94,6 +99,8 @@ def run_benchmark(
     outdir: Path | str,
     *,
     experiment_id: str = "EXP-0001",
+    title: str = "Phase 1 quantization baseline: reference implementation latency, memory, representation size",
+    notes: tuple[str, ...] = (),
     levels=SUPPORTED_LEVELS,
     resolutions=((320, 240), (640, 480), (1920, 1080)),
     frames: int = 24,
@@ -124,7 +131,7 @@ def run_benchmark(
     result = {
         "schema": "vie.benchmark-result/1",
         "experiment_id": experiment_id,
-        "title": "Phase 1 quantization baseline: reference implementation latency, memory, representation size",
+        "title": title,
         "research_questions": ["Q1", "Q2", "Q7", "Q8"],
         "hypotheses": ["H1 (indirect: representation size + cost baseline only; no accuracy claim yet)"],
         "code_commit": commit,
@@ -132,9 +139,12 @@ def run_benchmark(
         "warmup_frames": warmup,
         "repeats_per_condition": frames - warmup,
         "measurement_method": {
-            "clock": "time.perf_counter_ns (monotonic)",
-            "memory": "tracemalloc peak of gray+quantize per frame",
-            "timer_resolution_note": "ns resolution; single-threaded CPU; sub-microsecond noise expected",
+            "clock": "time.perf_counter_ns (monotonic); tracemalloc inactive during timing",
+            "memory": "tracemalloc peak of one representative frame (last), separate untimed pass",
+            "timer_resolution_note": (
+                "ns resolution; single-threaded CPU; grayscale and quantization timed "
+                "separately and end-to-end; peak is transient Python allocation, not RSS"
+            ),
         },
         "environment": environment_summary(),
         "conditions": conditions,
@@ -144,7 +154,7 @@ def run_benchmark(
     validate_against_schema(result, schemas_dir() / "benchmark_result.schema.json", what="benchmark result")
     result_path = outdir / "result.json"
     result_path.write_text(dumps_json(result), encoding="utf-8")
-    report = render_report(result)
+    report = render_report(result, notes=notes)
     (outdir / "report.md").write_text(report, encoding="utf-8")
     logger.info("benchmark written to %s", outdir)
     return result_path
@@ -154,7 +164,7 @@ def _ms(ns: float) -> str:
     return f"{ns / 1e6:.3f}"
 
 
-def render_report(result: dict) -> str:
+def render_report(result: dict, *, notes: tuple[str, ...] = ()) -> str:
     lines = [
         f"# {result['experiment_id']} — {result['title']}",
         "",
@@ -177,7 +187,8 @@ def render_report(result: dict) -> str:
         lines += [
             f"## {w}×{h}",
             "",
-            "| levels | gray p50 (ms) | quantize p50 (ms) | end-to-end p50 (ms) | raw B | gray f64 B | quant u8 B | quant/raw |",
+            "| levels | gray p50 (ms) | quantize p50 (ms) | end-to-end p50 (ms) | raw B | "
+            "gray f64 B | quant u8 B | quant/raw |",
             "|---:|---:|---:|---:|---:|---:|---:|---:|",
         ]
         for cond in sorted(conds, key=lambda c: c["levels"]):
@@ -188,6 +199,9 @@ def render_report(result: dict) -> str:
                 f"{b['intensity_u8']} | {b['intensity_u8'] / b['raw_rgb']:.4f} |"
             )
         lines.append("")
+    if notes:
+        lines += ["## Method / provenance notes (recorded facts)", ""]
+        lines += [f"- {note}" for note in notes]
     lines += [
         "## Reading notes",
         "",
@@ -212,6 +226,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--levels", default="8,16,32,64,128,256")
     parser.add_argument("--resolutions", default="320x240,640x480,1920x1080")
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--title", default=(
+        "Phase 1 quantization baseline: reference implementation latency, memory, representation size"
+    ))
+    parser.add_argument("--note", action="append", default=[], help="fact to record in report.md")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     levels = tuple(int(x) for x in args.levels.split(","))
@@ -221,6 +239,8 @@ def main(argv: list[str] | None = None) -> int:
     run_benchmark(
         args.output,
         experiment_id=args.experiment_id,
+        title=args.title,
+        notes=tuple(args.note),
         levels=levels,
         resolutions=resolutions,
         frames=args.frames,

@@ -10,7 +10,7 @@ from __future__ import annotations
 import contextlib
 import math
 import tracemalloc
-from typing import Iterable, Sequence
+from collections.abc import Iterable, Sequence
 
 
 def summarize(values: Sequence[float]) -> dict:
@@ -41,7 +41,7 @@ def summarize(values: Sequence[float]) -> dict:
 class Timer:
     """One-shot wall timer in nanoseconds."""
 
-    def __enter__(self) -> "Timer":
+    def __enter__(self) -> Timer:
         import time
 
         self.start_ns = time.perf_counter_ns()
@@ -69,9 +69,10 @@ def traced_memory():
 def rss_kb() -> int | None:
     """Resident set size in KiB (Linux) or None when unavailable."""
     try:
-        for line in open("/proc/self/status", encoding="ascii"):
-            if line.startswith("VmRSS:"):
-                return int(line.split()[1])
+        with open("/proc/self/status", encoding="ascii") as fh:
+            for line in fh:
+                if line.startswith("VmRSS:"):
+                    return int(line.split()[1])
     except OSError:
         pass
     return None

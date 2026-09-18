@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maryatta8200-ops/visual-motion-detection1/schemas/objects_config.schema.json",
+  "title": "VIE objects configuration",
+  "description": "vie.objects-config/1 — versioned configuration for intensity-object extraction (VIE-SPEC-REP 1.1.0 §R5). additionalProperties:false everywhere so typos fail loudly (MASTER_PLAN §3.8).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "vie.objects-config/1" },
+    "objects_config_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "connectivity": {
+      "enum": [4],
+      "description": "4 = von Neumann neighbourhood. 8 is an explicit extension point and MUST fail validation until a later spec revision defines its merging rules (VIE-SPEC-REP 1.1.0 §R2.2)."
+    },
+    "min_area": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "objects with area < min_area are discarded and counted (dropped_regions/dropped_pixels); never silently removed (1.1.0 §R5.1)"
+    },
+    "max_regions": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "description": "hard cap per frame; exceeding it raises RegionExtractionError instead of truncating (1.1.0 §R5.2)"
+    },
+    "implementation": { "enum": ["reference"] }
+  },
+  "required": ["schema", "objects_config_version", "connectivity", "min_area", "max_regions", "implementation"]
+}
