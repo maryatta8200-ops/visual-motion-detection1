@@ -5,7 +5,11 @@
     {
       "experiment_id": "EXP-0001",
       "title": "Phase 1 quantization baseline: reference implementation latency, memory, representation size",
-      "research_questions": ["Q2", "Q7", "Q8"],
+      "research_questions": [
+        "Q2",
+        "Q7",
+        "Q8"
+      ],
       "hypotheses": [],
       "status": "completed",
       "stage": "phase1",
@@ -20,6 +24,31 @@
         "grayscale float64 conversion dominates pipeline cost; optimization deferred to Phase 8 per plan 3.14"
       ],
       "decision": "baseline recorded; no superiority claim (plan 19/39)"
+    },
+    {
+      "experiment_id": "EXP-0002",
+      "title": "Phase 2 intensity-object extraction: cost of labeling, identity and metadata",
+      "research_questions": [
+        "Q4",
+        "Q7",
+        "Q8"
+      ],
+      "hypotheses": [],
+      "status": "completed",
+      "stage": "phase2",
+      "code_commit": "recorded-in-result.json",
+      "config": "vie.objects-config/1 reference (connectivity 4, min_area 1 unless stated); 3 sizes x 4 scenes x L in {8,16,64,256} (5 measured frames + 2 warm-up each) plus a dense per-pixel-noise block at L=256 (320x240 and 640x480 min_area=1, 1920x1080 min_area=2)",
+      "dataset_version": "synthetic://gradient,moving_square,ramp_bands,static (+noise_px), deterministic generator",
+      "results_artifact": "experiments/EXP-0002-object-extraction/result.json",
+      "human_report": "experiments/EXP-0002-object-extraction/report.md",
+      "key_findings": [
+        "structured 1080p extraction p50 106-148 ms (2 regions); ramp_bands (one-pixel-wide runs) is the main-matrix worst case at 2.33 s/frame",
+        "label maps are int32 = 4 bytes/pixel (4/3 of the uint8 intensity map, 4/9 of raw RGB) - reported, not hidden",
+        "dense-noise metadata dominates: 13.3 MB/frame at 320x240 and 53.9 MB/frame at 640x480, ~58x the raw frame; min_area is the lever (discards counted)",
+        "latency must be measured untraced: tracemalloc inflates this code 1.36x-16x (measured)",
+        "fully dense 1920x1080 noise at min_area=1 (~2.07M records) exceeded 3 GB and is recorded as not measured"
+      ],
+      "decision": "Phase 2 accepted (DEC-0004) on this evidence; optimization deferred to the profiling phase (plan 3.14/8), no rate claimed"
     }
   ]
 }

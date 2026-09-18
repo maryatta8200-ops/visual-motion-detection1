@@ -1,0 +1,2735 @@
+{
+  "code_commit": "a86b70a888d6e5cb08aed0cf3f002aa05f266bd5",
+  "conditions": [
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 1840
+      },
+      "condition_id": "gradient-L8-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 5665050.0,
+        "mean": 5215039.8,
+        "min": 4838101.0,
+        "n": 5,
+        "p50": 5182544.0,
+        "p95": 5665050.0,
+        "p99": 5665050.0,
+        "std": 284703.81121678016
+      },
+      "height": 240,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 3995302,
+      "regions_per_frame": {
+        "max": 8.0,
+        "mean": 8.0,
+        "min": 8.0,
+        "n": 5,
+        "p50": 8.0,
+        "p95": 8.0,
+        "p99": 8.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 40
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 3699
+      },
+      "condition_id": "gradient-L16-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 8580337.0,
+        "mean": 7083256.6,
+        "min": 5986931.0,
+        "n": 5,
+        "p50": 6329391.0,
+        "p95": 8580337.0,
+        "p99": 8580337.0,
+        "std": 1183324.2594786265
+      },
+      "height": 240,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 3995302,
+      "regions_per_frame": {
+        "max": 16.0,
+        "mean": 16.0,
+        "min": 16.0,
+        "n": 5,
+        "p50": 16.0,
+        "p95": 16.0,
+        "p99": 16.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 80
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 14883
+      },
+      "condition_id": "gradient-L64-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 13025400.0,
+        "mean": 12856375.4,
+        "min": 12700261.0,
+        "n": 5,
+        "p50": 12841473.0,
+        "p95": 13025400.0,
+        "p99": 13025400.0,
+        "std": 140449.1230027443
+      },
+      "height": 240,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 3995062,
+      "regions_per_frame": {
+        "max": 64.0,
+        "mean": 64.0,
+        "min": 64.0,
+        "n": 5,
+        "p50": 64.0,
+        "p95": 64.0,
+        "p99": 64.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 320
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 59825
+      },
+      "condition_id": "gradient-L256-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 46750578.0,
+        "mean": 44113254.8,
+        "min": 42775657.0,
+        "n": 5,
+        "p50": 43521721.0,
+        "p95": 46750578.0,
+        "p99": 46750578.0,
+        "std": 1440338.2552333185
+      },
+      "height": 240,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 8267501,
+      "regions_per_frame": {
+        "max": 256.0,
+        "mean": 256.0,
+        "min": 256.0,
+        "n": 5,
+        "p50": 256.0,
+        "p95": 256.0,
+        "p99": 256.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 1280
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 483
+      },
+      "condition_id": "moving_square-L8-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 3683939.0,
+        "mean": 3609969.8,
+        "min": 3570333.0,
+        "n": 5,
+        "p50": 3593236.0,
+        "p95": 3683939.0,
+        "p99": 3683939.0,
+        "std": 41885.88609734787
+      },
+      "height": 240,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 3995062,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 485
+      },
+      "condition_id": "moving_square-L16-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 3749385.0,
+        "mean": 3629494.8,
+        "min": 3584825.0,
+        "n": 5,
+        "p50": 3600873.0,
+        "p95": 3749385.0,
+        "p99": 3749385.0,
+        "std": 61724.3608776956
+      },
+      "height": 240,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 3995062,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 487
+      },
+      "condition_id": "moving_square-L64-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 3566547.0,
+        "mean": 3548888.4,
+        "min": 3535190.0,
+        "n": 5,
+        "p50": 3548196.0,
+        "p95": 3566547.0,
+        "p99": 3566547.0,
+        "std": 11354.462710317914
+      },
+      "height": 240,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 3995003,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 489
+      },
+      "condition_id": "moving_square-L256-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 3741467.0,
+        "mean": 3623632.8,
+        "min": 3534698.0,
+        "n": 5,
+        "p50": 3621613.0,
+        "p95": 3741467.0,
+        "p99": 3741467.0,
+        "std": 67168.84579743797
+      },
+      "height": 240,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 3995003,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 73803
+      },
+      "condition_id": "ramp_bands-L8-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 53245068.0,
+        "mean": 52508614.0,
+        "min": 52064767.0,
+        "n": 5,
+        "p50": 52417368.0,
+        "p95": 53245068.0,
+        "p99": 53245068.0,
+        "std": 397786.6323651412
+      },
+      "height": 240,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 9993941,
+      "regions_per_frame": {
+        "max": 320.0,
+        "mean": 320.0,
+        "min": 320.0,
+        "n": 5,
+        "p50": 320.0,
+        "p95": 320.0,
+        "p99": 320.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 1600
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 74043
+      },
+      "condition_id": "ramp_bands-L16-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 56873927.0,
+        "mean": 55810159.8,
+        "min": 53061960.0,
+        "n": 5,
+        "p50": 56352458.0,
+        "p95": 56873927.0,
+        "p99": 56873927.0,
+        "std": 1401407.6392158563
+      },
+      "height": 240,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 9993882,
+      "regions_per_frame": {
+        "max": 320.0,
+        "mean": 320.0,
+        "min": 320.0,
+        "n": 5,
+        "p50": 320.0,
+        "p95": 320.0,
+        "p99": 320.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 1600
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 74343
+      },
+      "condition_id": "ramp_bands-L64-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 53333965.0,
+        "mean": 52454806.2,
+        "min": 51736430.0,
+        "n": 5,
+        "p50": 52473052.0,
+        "p95": 53333965.0,
+        "p99": 53333965.0,
+        "std": 518423.80624288466
+      },
+      "height": 240,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 9993882,
+      "regions_per_frame": {
+        "max": 320.0,
+        "mean": 320.0,
+        "min": 320.0,
+        "n": 5,
+        "p50": 320.0,
+        "p95": 320.0,
+        "p99": 320.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 1600
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 74715
+      },
+      "condition_id": "ramp_bands-L256-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 65675490.0,
+        "mean": 59825706.4,
+        "min": 52235833.0,
+        "n": 5,
+        "p50": 63023923.0,
+        "p95": 65675490.0,
+        "p99": 65675490.0,
+        "std": 6019437.192198274
+      },
+      "height": 240,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 9993882,
+      "regions_per_frame": {
+        "max": 320.0,
+        "mean": 320.0,
+        "min": 320.0,
+        "n": 5,
+        "p50": 320.0,
+        "p95": 320.0,
+        "p99": 320.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 1600
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 478
+      },
+      "condition_id": "static-L8-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 3752845.0,
+        "mean": 3664007.2,
+        "min": 3566250.0,
+        "n": 5,
+        "p50": 3640343.0,
+        "p95": 3752845.0,
+        "p99": 3752845.0,
+        "std": 71146.0808264236
+      },
+      "height": 240,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 3995062,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 480
+      },
+      "condition_id": "static-L16-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 3510318.0,
+        "mean": 3446184.4,
+        "min": 3352334.0,
+        "n": 5,
+        "p50": 3440365.0,
+        "p95": 3510318.0,
+        "p99": 3510318.0,
+        "std": 56605.38282036436
+      },
+      "height": 240,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 3995003,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 482
+      },
+      "condition_id": "static-L64-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 3564446.0,
+        "mean": 3467903.4,
+        "min": 3402237.0,
+        "n": 5,
+        "p50": 3471756.0,
+        "p95": 3564446.0,
+        "p99": 3564446.0,
+        "std": 60135.74242195734
+      },
+      "height": 240,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 3995003,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 484
+      },
+      "condition_id": "static-L256-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 4055445.0,
+        "mean": 3702416.0,
+        "min": 3416573.0,
+        "n": 5,
+        "p50": 3691041.0,
+        "p95": 4055445.0,
+        "p99": 4055445.0,
+        "std": 240565.52306596222
+      },
+      "height": 240,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 3995003,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 1852
+      },
+      "condition_id": "gradient-L8-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 18642805.0,
+        "mean": 18455404.2,
+        "min": 18369146.0,
+        "n": 5,
+        "p50": 18431882.0,
+        "p95": 18642805.0,
+        "p99": 18642805.0,
+        "std": 98704.29382433167
+      },
+      "height": 480,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15975894,
+      "regions_per_frame": {
+        "max": 8.0,
+        "mean": 8.0,
+        "min": 8.0,
+        "n": 5,
+        "p50": 8.0,
+        "p95": 8.0,
+        "p99": 8.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 40
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 3722
+      },
+      "condition_id": "gradient-L16-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 21498659.0,
+        "mean": 21230540.4,
+        "min": 21115996.0,
+        "n": 5,
+        "p50": 21159132.0,
+        "p95": 21498659.0,
+        "p99": 21498659.0,
+        "std": 138735.00074112517
+      },
+      "height": 480,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15975835,
+      "regions_per_frame": {
+        "max": 16.0,
+        "mean": 16.0,
+        "min": 16.0,
+        "n": 5,
+        "p50": 16.0,
+        "p95": 16.0,
+        "p99": 16.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 80
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 14912
+      },
+      "condition_id": "gradient-L64-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 36070985.0,
+        "mean": 35563417.0,
+        "min": 35109567.0,
+        "n": 5,
+        "p50": 35383356.0,
+        "p95": 36070985.0,
+        "p99": 36070985.0,
+        "std": 368396.1226044596
+      },
+      "height": 480,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15975835,
+      "regions_per_frame": {
+        "max": 64.0,
+        "mean": 64.0,
+        "min": 64.0,
+        "n": 5,
+        "p50": 64.0,
+        "p95": 64.0,
+        "p99": 64.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 320
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 60081
+      },
+      "condition_id": "gradient-L256-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 104438797.0,
+        "mean": 103399691.4,
+        "min": 102812507.0,
+        "n": 5,
+        "p50": 103202354.0,
+        "p95": 104438797.0,
+        "p99": 104438797.0,
+        "std": 582707.9815497983
+      },
+      "height": 480,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 19320157,
+      "regions_per_frame": {
+        "max": 256.0,
+        "mean": 256.0,
+        "min": 256.0,
+        "n": 5,
+        "p50": 256.0,
+        "p95": 256.0,
+        "p99": 256.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 1280
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 482
+      },
+      "condition_id": "moving_square-L8-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 15160078.0,
+        "mean": 14804383.4,
+        "min": 14301228.0,
+        "n": 5,
+        "p50": 15060578.0,
+        "p95": 15160078.0,
+        "p99": 15160078.0,
+        "std": 381050.197906575
+      },
+      "height": 480,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15975835,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 484
+      },
+      "condition_id": "moving_square-L16-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 15642051.0,
+        "mean": 15000051.4,
+        "min": 14449848.0,
+        "n": 5,
+        "p50": 14742575.0,
+        "p95": 15642051.0,
+        "p99": 15642051.0,
+        "std": 472102.72721711744
+      },
+      "height": 480,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15975894,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 486
+      },
+      "condition_id": "moving_square-L64-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 19975538.0,
+        "mean": 16703238.0,
+        "min": 14465278.0,
+        "n": 5,
+        "p50": 16059677.0,
+        "p95": 19975538.0,
+        "p99": 19975538.0,
+        "std": 2110124.5918833325
+      },
+      "height": 480,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15975835,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 488
+      },
+      "condition_id": "moving_square-L256-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 14378200.0,
+        "mean": 14205781.6,
+        "min": 14117085.0,
+        "n": 5,
+        "p50": 14160229.0,
+        "p95": 14378200.0,
+        "p99": 14378200.0,
+        "std": 98817.2580708451
+      },
+      "height": 480,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15975835,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 148043
+      },
+      "condition_id": "ramp_bands-L8-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 250446397.0,
+        "mean": 241364563.0,
+        "min": 233243298.0,
+        "n": 5,
+        "p50": 236702374.0,
+        "p95": 250446397.0,
+        "p99": 250446397.0,
+        "std": 7290228.683932899
+      },
+      "height": 480,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 39989898,
+      "regions_per_frame": {
+        "max": 640.0,
+        "mean": 640.0,
+        "min": 640.0,
+        "n": 5,
+        "p50": 640.0,
+        "p95": 640.0,
+        "p99": 640.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 3200
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 148523
+      },
+      "condition_id": "ramp_bands-L16-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 297261092.0,
+        "mean": 265124271.4,
+        "min": 242060927.0,
+        "n": 5,
+        "p50": 264240379.0,
+        "p95": 297261092.0,
+        "p99": 297261092.0,
+        "std": 19341914.608756237
+      },
+      "height": 480,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 39989957,
+      "regions_per_frame": {
+        "max": 640.0,
+        "mean": 640.0,
+        "min": 640.0,
+        "n": 5,
+        "p50": 640.0,
+        "p95": 640.0,
+        "p99": 640.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 3200
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 149123
+      },
+      "condition_id": "ramp_bands-L64-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 258047980.0,
+        "mean": 241130549.2,
+        "min": 232817756.0,
+        "n": 5,
+        "p50": 238460787.0,
+        "p95": 258047980.0,
+        "p99": 258047980.0,
+        "std": 8960022.915254477
+      },
+      "height": 480,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 39989898,
+      "regions_per_frame": {
+        "max": 640.0,
+        "mean": 640.0,
+        "min": 640.0,
+        "n": 5,
+        "p50": 640.0,
+        "p95": 640.0,
+        "p99": 640.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 3200
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 149943
+      },
+      "condition_id": "ramp_bands-L256-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 250464294.0,
+        "mean": 246311108.8,
+        "min": 243906313.0,
+        "n": 5,
+        "p50": 245891237.0,
+        "p95": 250464294.0,
+        "p99": 250464294.0,
+        "std": 2439891.140167479
+      },
+      "height": 480,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 39989957,
+      "regions_per_frame": {
+        "max": 640.0,
+        "mean": 640.0,
+        "min": 640.0,
+        "n": 5,
+        "p50": 640.0,
+        "p95": 640.0,
+        "p99": 640.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 3200
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 481
+      },
+      "condition_id": "static-L8-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 14143414.0,
+        "mean": 14032110.2,
+        "min": 13930900.0,
+        "n": 5,
+        "p50": 14029745.0,
+        "p95": 14143414.0,
+        "p99": 14143414.0,
+        "std": 67388.67256564711
+      },
+      "height": 480,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15975835,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 483
+      },
+      "condition_id": "static-L16-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 14143060.0,
+        "mean": 14062436.0,
+        "min": 14010037.0,
+        "n": 5,
+        "p50": 14054785.0,
+        "p95": 14143060.0,
+        "p99": 14143060.0,
+        "std": 47351.06850747932
+      },
+      "height": 480,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15975894,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 485
+      },
+      "condition_id": "static-L64-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 14105765.0,
+        "mean": 14007288.2,
+        "min": 13925002.0,
+        "n": 5,
+        "p50": 13996719.0,
+        "p95": 14105765.0,
+        "p99": 14105765.0,
+        "std": 65884.25955689265
+      },
+      "height": 480,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15975835,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 487
+      },
+      "condition_id": "static-L256-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 14147209.0,
+        "mean": 13999721.4,
+        "min": 13819606.0,
+        "n": 5,
+        "p50": 14019116.0,
+        "p95": 14147209.0,
+        "p99": 14147209.0,
+        "std": 106208.1330720016
+      },
+      "height": 480,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 15975835,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 1882
+      },
+      "condition_id": "gradient-L8-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 152030592.0,
+        "mean": 143752282.0,
+        "min": 135539473.0,
+        "n": 5,
+        "p50": 143144369.0,
+        "p95": 152030592.0,
+        "p99": 152030592.0,
+        "std": 5313842.126617462
+      },
+      "height": 1080,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828635,
+      "regions_per_frame": {
+        "max": 8.0,
+        "mean": 8.0,
+        "min": 8.0,
+        "n": 5,
+        "p50": 8.0,
+        "p95": 8.0,
+        "p99": 8.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 40
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 3783
+      },
+      "condition_id": "gradient-L16-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 149858602.0,
+        "mean": 145839054.0,
+        "min": 139660609.0,
+        "n": 5,
+        "p50": 148461034.0,
+        "p95": 149858602.0,
+        "p99": 149858602.0,
+        "std": 4293428.831799451
+      },
+      "height": 1080,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828635,
+      "regions_per_frame": {
+        "max": 16.0,
+        "mean": 16.0,
+        "min": 16.0,
+        "n": 5,
+        "p50": 16.0,
+        "p95": 16.0,
+        "p99": 16.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 80
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 15156
+      },
+      "condition_id": "gradient-L64-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 196420161.0,
+        "mean": 187606426.8,
+        "min": 181646778.0,
+        "n": 5,
+        "p50": 186525501.0,
+        "p95": 196420161.0,
+        "p99": 196420161.0,
+        "std": 4990693.048399487
+      },
+      "height": 1080,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828635,
+      "regions_per_frame": {
+        "max": 64.0,
+        "mean": 64.0,
+        "min": 64.0,
+        "n": 5,
+        "p50": 64.0,
+        "p95": 64.0,
+        "p99": 64.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 320
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 60921
+      },
+      "condition_id": "gradient-L256-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 395189020.0,
+        "mean": 391453052.6,
+        "min": 389761824.0,
+        "n": 5,
+        "p50": 390685011.0,
+        "p95": 395189020.0,
+        "p99": 395189020.0,
+        "std": 2009812.942329569
+      },
+      "height": 1080,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828635,
+      "regions_per_frame": {
+        "max": 256.0,
+        "mean": 256.0,
+        "min": 256.0,
+        "n": 5,
+        "p50": 256.0,
+        "p95": 256.0,
+        "p99": 256.0,
+        "std": 0.0
+      },
+      "scene": "gradient",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 1280
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 484
+      },
+      "condition_id": "moving_square-L8-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 122980439.0,
+        "mean": 120377890.0,
+        "min": 115141266.0,
+        "n": 5,
+        "p50": 122352604.0,
+        "p95": 122980439.0,
+        "p99": 122980439.0,
+        "std": 2962829.935088209
+      },
+      "height": 1080,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828694,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 486
+      },
+      "condition_id": "moving_square-L16-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 143090318.0,
+        "mean": 131132961.6,
+        "min": 121920406.0,
+        "n": 5,
+        "p50": 127269564.0,
+        "p95": 143090318.0,
+        "p99": 143090318.0,
+        "std": 8012895.918952787
+      },
+      "height": 1080,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828635,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 488
+      },
+      "condition_id": "moving_square-L64-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 150148700.0,
+        "mean": 130205584.4,
+        "min": 115524300.0,
+        "n": 5,
+        "p50": 127157110.0,
+        "p95": 150148700.0,
+        "p99": 150148700.0,
+        "std": 11249284.834633118
+      },
+      "height": 1080,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828635,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 490
+      },
+      "condition_id": "moving_square-L256-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 129623164.0,
+        "mean": 125675509.2,
+        "min": 122342954.0,
+        "n": 5,
+        "p50": 125595400.0,
+        "p95": 129623164.0,
+        "p99": 129623164.0,
+        "std": 2529621.027009018
+      },
+      "height": 1080,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828635,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "moving_square",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 452524
+      },
+      "condition_id": "ramp_bands-L8-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 2182337159.0,
+        "mean": 2035737495.4,
+        "min": 1915370385.0,
+        "n": 5,
+        "p50": 2016876887.0,
+        "p95": 2182337159.0,
+        "p99": 2182337159.0,
+        "std": 86277142.20261368
+      },
+      "height": 1080,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 269704170,
+      "regions_per_frame": {
+        "max": 1920.0,
+        "mean": 1920.0,
+        "min": 1920.0,
+        "n": 5,
+        "p50": 1920.0,
+        "p95": 1920.0,
+        "p99": 1920.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 9600
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 453964
+      },
+      "condition_id": "ramp_bands-L16-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 2003573448.0,
+        "mean": 1961742332.4,
+        "min": 1941225652.0,
+        "n": 5,
+        "p50": 1953427839.0,
+        "p95": 2003573448.0,
+        "p99": 2003573448.0,
+        "std": 21900296.285460416
+      },
+      "height": 1080,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 269704229,
+      "regions_per_frame": {
+        "max": 1920.0,
+        "mean": 1920.0,
+        "min": 1920.0,
+        "n": 5,
+        "p50": 1920.0,
+        "p95": 1920.0,
+        "p99": 1920.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 9600
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 455764
+      },
+      "condition_id": "ramp_bands-L64-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 2187563517.0,
+        "mean": 2101786016.6,
+        "min": 2034738143.0,
+        "n": 5,
+        "p50": 2098691393.0,
+        "p95": 2187563517.0,
+        "p99": 2187563517.0,
+        "std": 49856009.46481976
+      },
+      "height": 1080,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 269704109,
+      "regions_per_frame": {
+        "max": 1920.0,
+        "mean": 1920.0,
+        "min": 1920.0,
+        "n": 5,
+        "p50": 1920.0,
+        "p95": 1920.0,
+        "p99": 1920.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 9600
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 458444
+      },
+      "condition_id": "ramp_bands-L256-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 2671086314.0,
+        "mean": 2334375821.0,
+        "min": 2105427685.0,
+        "n": 5,
+        "p50": 2334652141.0,
+        "p95": 2671086314.0,
+        "p99": 2671086314.0,
+        "std": 194980994.06685904
+      },
+      "height": 1080,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 269704229,
+      "regions_per_frame": {
+        "max": 1920.0,
+        "mean": 1920.0,
+        "min": 1920.0,
+        "n": 5,
+        "p50": 1920.0,
+        "p95": 1920.0,
+        "p99": 1920.0,
+        "std": 0.0
+      },
+      "scene": "ramp_bands",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 9600
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 482
+      },
+      "condition_id": "static-L8-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 112178072.0,
+        "mean": 110578218.0,
+        "min": 107948652.0,
+        "n": 5,
+        "p50": 111271987.0,
+        "p95": 112178072.0,
+        "p99": 112178072.0,
+        "std": 1563458.1353142783
+      },
+      "height": 1080,
+      "levels": 8,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828934,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 484
+      },
+      "condition_id": "static-L16-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 107091045.0,
+        "mean": 104151111.8,
+        "min": 100874978.0,
+        "n": 5,
+        "p50": 105567673.0,
+        "p95": 107091045.0,
+        "p99": 107091045.0,
+        "std": 2448584.5321438587
+      },
+      "height": 1080,
+      "levels": 16,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828694,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 486
+      },
+      "condition_id": "static-L64-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 114141828.0,
+        "mean": 109485190.6,
+        "min": 105727876.0,
+        "n": 5,
+        "p50": 108137870.0,
+        "p95": 114141828.0,
+        "p99": 114141828.0,
+        "std": 3555222.4841705533
+      },
+      "height": 1080,
+      "levels": 64,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828635,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 488
+      },
+      "condition_id": "static-L256-1920x1080-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 123060675.0,
+        "mean": 109958301.0,
+        "min": 100183254.0,
+        "n": 5,
+        "p50": 111046235.0,
+        "p95": 123060675.0,
+        "p99": 123060675.0,
+        "std": 8261553.316341692
+      },
+      "height": 1080,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 0,
+      "peak_alloc_bytes": 107828635,
+      "regions_per_frame": {
+        "max": 2.0,
+        "mean": 2.0,
+        "min": 2.0,
+        "n": 5,
+        "p50": 2.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "std": 0.0
+      },
+      "scene": "static",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 10
+      },
+      "width": 1920
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 76800,
+        "labels_i32": 307200,
+        "raw_rgb": 230400,
+        "region_metadata_json": 13343457
+      },
+      "condition_id": "static-noise76800-L256-320x240-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 3,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 609125484.0,
+        "mean": 592098187.3333334,
+        "min": 571807505.0,
+        "n": 3,
+        "p50": 595361573.0,
+        "p95": 609125484.0,
+        "p99": 609125484.0,
+        "std": 15408767.064416377
+      },
+      "height": 240,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 76800,
+      "peak_alloc_bytes": 36529394,
+      "regions_per_frame": {
+        "max": 56963.0,
+        "mean": 56842.0,
+        "min": 56761.0,
+        "n": 3,
+        "p50": 56802.0,
+        "p95": 56963.0,
+        "p99": 56963.0,
+        "std": 87.18180238253088
+      },
+      "scene": "static+noise_px=76800",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 170526
+      },
+      "width": 320
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 307200,
+        "labels_i32": 1228800,
+        "raw_rgb": 921600,
+        "region_metadata_json": 53946770
+      },
+      "condition_id": "static-noise307200-L256-640x480-min1",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 3,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "std": 0.0
+      },
+      "extraction_ns": {
+        "max": 2444476034.0,
+        "mean": 2369152975.6666665,
+        "min": 2303139188.0,
+        "n": 3,
+        "p50": 2359843705.0,
+        "p95": 2444476034.0,
+        "p99": 2444476034.0,
+        "std": 58074796.02240473
+      },
+      "height": 480,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 1,
+      "noise_px": 307200,
+      "peak_alloc_bytes": 159948025,
+      "regions_per_frame": {
+        "max": 227735.0,
+        "mean": 227682.66666666666,
+        "min": 227653.0,
+        "n": 3,
+        "p50": 227660.0,
+        "p95": 227735.0,
+        "p99": 227735.0,
+        "std": 37.11543554312081
+      },
+      "scene": "static+noise_px=307200",
+      "totals": {
+        "dropped_pixels": 0,
+        "regions_dropped": 0,
+        "regions_kept": 683048
+      },
+      "width": 640
+    },
+    {
+      "bytes_per_frame": {
+        "intensity_u8": 2073600,
+        "labels_i32": 8294400,
+        "raw_rgb": 6220800,
+        "region_metadata_json": 30603326
+      },
+      "condition_id": "static-noise2073600-L256-1920x1080-min2",
+      "connectivity": 4,
+      "dropped_per_frame": {
+        "max": 1413625.0,
+        "mean": 1413283.0,
+        "min": 1413099.0,
+        "n": 3,
+        "p50": 1413125.0,
+        "p95": 1413625.0,
+        "p99": 1413625.0,
+        "std": 242.06335258908288
+      },
+      "extraction_ns": {
+        "max": 1728804504.0,
+        "mean": 1718890368.0,
+        "min": 1713429489.0,
+        "n": 3,
+        "p50": 1714437111.0,
+        "p95": 1728804504.0,
+        "p99": 1728804504.0,
+        "std": 7022411.503825591
+      },
+      "height": 1080,
+      "levels": 256,
+      "max_regions": null,
+      "min_area": 2,
+      "noise_px": 2073600,
+      "peak_alloc_bytes": 203766177,
+      "regions_per_frame": {
+        "max": 124855.0,
+        "mean": 124776.0,
+        "min": 124686.0,
+        "n": 3,
+        "p50": 124787.0,
+        "p95": 124855.0,
+        "p99": 124855.0,
+        "std": 69.4310209248479
+      },
+      "scene": "static+noise_px=2073600",
+      "totals": {
+        "dropped_pixels": 4239849,
+        "regions_dropped": 4239849,
+        "regions_kept": 374328
+      },
+      "width": 1920
+    }
+  ],
+  "created_at_utc": "2026-09-18T08:52:51.259Z",
+  "environment": {
+    "cpu_count": 2,
+    "cpu_model": "Intel(R) Xeon(R) Processor @ 2.60GHz",
+    "numpy_version": "2.4.6",
+    "platform": "Linux-x86_64/6.1.158+",
+    "python_version": "3.11.2"
+  },
+  "experiment_id": "EXP-0002",
+  "hypotheses": [
+    "H3 (indirect: representation size for objects is measured; accuracy unclaimed)",
+    "H5 (partial: cost of deterministic identity is included; robustness is Phase 3)"
+  ],
+  "measurement_method": {
+    "clock": "time.perf_counter_ns (monotonic)",
+    "memory": "tracemalloc peak of the extraction call (label map + records), measured in a separate untimed pass: tracing inflates latency ~1.6x, so timings are untraced",
+    "timer_resolution_note": "ns resolution, single-threaded; extraction only (grayscale+quantization excluded, they are EXP-0001); region_metadata_json is the exact serialized size of regions.json records per frame"
+  },
+  "repeats_per_condition": 5,
+  "research_questions": [
+    "Q4",
+    "Q7",
+    "Q8"
+  ],
+  "schema": "vie.object-benchmark-result/1",
+  "title": "Phase 2 intensity-object extraction: cost of labeling, identity and metadata",
+  "warmup_frames": 2
+}

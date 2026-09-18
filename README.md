@@ -7,28 +7,32 @@ information at lower computational cost — decided by experiments, not assumpti
 ([master plan](docs/MASTER_PLAN.md) §1, §39).
 
 > **Scope — read first.** Despite the repository name, this is **not** a motion-detection,
-> tracking, or surveillance component. The implemented stage is a *discrete intensity
-> tokenizer*: grayscale → quantized intensity map → checksummed frame store. There is no
-> optical flow, background subtraction, object detection, or learned model here; motion
-> representation is the long-term research question (Hypothesis registry), not current
-> capability. Not for medical, security, surveillance, or safety-critical use
-> ([SECURITY.md](SECURITY.md)).
+> tracking, or surveillance component. The implemented stages are a *discrete intensity
+> tokenizer* and a *per-frame intensity-object labeller*: grayscale → quantized intensity
+> map → checksummed frame store, and level-uniform 4-connected regions with positional ids
+> and counted discards. There is no optical flow, background subtraction, object detection,
+> cross-frame tracking, or learned model here; motion representation is the long-term
+> research question (Hypothesis registry), not current capability. Not for medical,
+> security, surveillance, or safety-critical use ([SECURITY.md](SECURITY.md)).
 
-**Status: Phase 1 accepted** (basic intensity engine). Phase 0 (formal representation
-specification) and Phase 1 evidence are complete; Phase 2 (intensity objects /
-connected components) is next and not yet started.
+**Status: Phase 2 accepted** (intensity objects, DEC-0004). Phase 0 (formal representation
+specification), Phase 1 (basic intensity engine) and Phase 2 (intensity objects) evidence are
+complete; motion / temporal linkage is the next stage and has not been started (it needs its
+own gate, plan §3.19).
 
 | Document | Purpose |
 |---|---|
 | [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md) | Controlling research plan (§1–§43) |
 | [`docs/phase-0/representation_specification.md`](docs/phase-0/representation_specification.md) | `VIE-SPEC-REP` 1.0.0 — frozen formal representation spec |
-| [`schemas/`](schemas/) | JSON Schemas (`vie.pipeline-config/1`, `vie.vocabulary/1`, `vie.framestore-manifest/1`, `vie.benchmark-result/1`); canonical copies ship inside the package, root files are symlinks |
+| [`docs/phase-2/representation_specification_1.1.0.md`](docs/phase-2/representation_specification_1.1.0.md) | `VIE-SPEC-REP` 1.1.0 — additive revision defining intensity objects |
+| [`schemas/`](schemas/) | JSON Schemas (`vie.pipeline-config/1`, `vie.vocabulary/1`, `vie.framestore-manifest/1`, `vie.benchmark-result/1`, `vie.intensity-object/1`, `vie.region-set/1`, `vie.objects-config/1`, `vie.objectstore-manifest/1`, `vie.object-benchmark-result/1`); canonical copies ship inside the package, root files are symlinks |
 | [`docs/phase-1/phase1_report.md`](docs/phase-1/phase1_report.md) | Phase 1 stage report (acceptance evidence) |
+| [`docs/phase-2/phase2_report.md`](docs/phase-2/phase2_report.md) | Phase 2 stage report (acceptance evidence) |
 | [`docs/decisions/decision_log.md`](docs/decisions/decision_log.md) | Decision records (append-only; DEC-0000/0001 stage gates, DEC-0002 audit revision) |
 | [`docs/reviews/2026-09-18-external-audit-response.md`](docs/reviews/2026-09-18-external-audit-response.md) | Point-by-point external-audit verification and dispositions |
 | [`SECURITY.md`](SECURITY.md) · [`CONTRIBUTING.md`](CONTRIBUTING.md) | Exposure rules and contribution rules |
 | [`docs/hypotheses/registry.md`](docs/hypotheses/registry.md) | Versioned hypotheses H1–H5 |
-| [`experiments/registry.json`](experiments/registry.json) | Formal experiment registry (EXP-0001) |
+| [`experiments/registry.json`](experiments/registry.json) | Formal experiment registry (EXP-0001, EXP-0002) |
 
 ## Quickstart
 

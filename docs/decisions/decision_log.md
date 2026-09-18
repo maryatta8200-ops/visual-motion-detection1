@@ -127,3 +127,37 @@ history (plan §3.7, §37).
   `configs/`, `experiments/EXP-0001/`.
 - Follow-up gate: **DEC-0004** accepts or rejects Phase 2 on evidence (full test suite,
   ruff/mypy, `vie self-test`, EXP-0002 measured cost, plan §10 acceptance table).
+
+## DEC-0004 — Accept Phase 2 (intensity objects) on evidence
+
+- Date: 2026-09-18. Type: stage acceptance (implementation + evidence). Status: **accepted**.
+- Inputs: [`docs/phase-2/phase2_report.md`](../phase-2/phase2_report.md),
+  [`experiments/EXP-0002-object-extraction/`](../../experiments/EXP-0002-object-extraction/)
+  (`result.json` schema-validated against `vie.object-benchmark-result/1` + `report.md`),
+  full test suite, `vie self-test`, CI.
+- Evidence at acceptance:
+  1. **correctness** — the §R9 normative example is executable and passes exactly; the
+     production labeler matches an independent flood-fill oracle label-for-label on generated
+     corpora (250+ maps × 4 `min_area` values) and the fast validator matches the normative
+     JSON Schema on a mutation corpus;
+  2. **drops are counted, never silent** — `dropped_regions`/`dropped_pixels` are mandatory
+     manifest fields and are asserted by tests and by `vie self-test`; `max_regions` raises
+     `RegionExtractionError` and an aborted run leaves no valid store;
+  3. **determinism** — replay produces byte-identical `region_labels.npz` and `regions.json`
+     and manifests equal modulo `created_at_utc`/`duration_s`; ids are positional and
+     contiguous `0..n−1`;
+  4. **measured cost** — 51 EXP-0002 conditions: structured 1080p p50 106–148 ms; main-matrix
+     worst case 2.33 s/frame (one-pixel-wide run patterns); dense-noise metadata up to ~58×
+     the raw frame, with `min_area` as the lever; peak allocations 10/40/270 MB for
+     320×240/640×480/1920×1080; latencies measured untraced (tracing inflates 1.36×–16×);
+  5. **gates** — 314 tests pass, ruff/mypy clean, `vie self-test` PASS, wheel-installed
+     schemas validate stores without a checkout.
+- Accepted limitations, stated rather than smoothed over: the reference implementation is
+  deliberately un-optimized (plan §3.14/§8); memory bounds the measured adversarial envelope
+  on this 3 GB machine (dense 1080p at `min_area=1` is recorded as **not measured**); entity
+  identity across frames remains Phase 3 and `fingerprint` is documented as a content
+  signature only; tokens and Phase-1 artifacts are untouched (golden `bfcd8492…` unchanged).
+- Untouched: `docs/MASTER_PLAN.md`, `docs/hypotheses/registry.md`, VIE-SPEC-REP 1.0.0,
+  `configs/`, `experiments/EXP-0001/`.
+- Next stage (not started, requires its own gate): Phase 3 — temporal linkage / motion, which
+  must define cross-frame identity explicitly and provisionally (plan §3.19).

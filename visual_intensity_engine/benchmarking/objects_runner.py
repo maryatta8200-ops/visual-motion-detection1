@@ -324,6 +324,19 @@ def render_report(result: dict, *, notes: tuple[str, ...] = ()) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _parse_adversarial(text: str) -> tuple[tuple[int, int, int, int], ...]:
+    """`widthxheight:min_area:frames` list → tuples (the documented envelope)."""
+    specs: list[tuple[int, int, int, int]] = []
+    for item in text.split(","):
+        item = item.strip()
+        if not item:
+            continue
+        size, min_area, frames = item.split(":")
+        width, height = size.lower().split("x")
+        specs.append((int(width), int(height), int(min_area), int(frames)))
+    return tuple(specs)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="vie-objects-benchmark", description=__doc__)
     parser.add_argument("--output", default="experiments/EXP-0002-object-extraction")
@@ -349,12 +362,7 @@ def main(argv: list[str] | None = None) -> int:
         scenes=tuple(s.strip() for s in args.scenes.split(",") if s.strip()),
         frames=args.frames,
         warmup=args.warmup,
-        adversarial_specs=tuple(
-            (int(w), int(h), int(ma), int(fr))
-            for w, h, ma, fr in (
-                item.split(":") for item in args.adversarial.split(",") if item.strip()
-            )
-        ),
+        adversarial_specs=_parse_adversarial(args.adversarial),
         notes=tuple(args.note),
         seed=args.seed,
     )

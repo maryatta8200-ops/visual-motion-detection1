@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "visual-intensity-engine"
 version = "0.1.0"
-description = "Discrete Visual Intensity & Motion Representation — stage-gated research platform (current stage: Phase 1)"
+description = "Discrete Visual Intensity & Motion Representation — stage-gated research platform (current stage: Phase 2)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Proprietary-Research" }
