@@ -24,9 +24,13 @@ and stable under its acceptance criteria**.
 ```bash
 scripts/setup_env.sh                 # deterministic venv (pinned requirements.txt)
 scripts/run_tests.sh                 # full suite, verbose
+.venv/bin/pip install ruff mypy      # dev tools (also in the 'dev' extra)
 .venv/bin/ruff check visual_intensity_engine tests scripts
-.venv/bin/mypy visual_intensity_engine
+.venv/bin/mypy visual_intensity_engine   # run it with the declared deps installed
 ```
+
+Note: mypy's result depends on which stubs are installed (the optional `video` extra
+provides opencv), so install `-e '.[dev]'` before type-checking — CI does the same.
 
 The exact pins in `requirements.txt` are the environment the Phase 0/1 acceptance evidence
 was recorded in — do not "helpfully" bump them in a change that is not itself a recorded
