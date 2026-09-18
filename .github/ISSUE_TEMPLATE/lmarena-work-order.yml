@@ -1,0 +1,100 @@
+name: LMArena automated-work order
+description: Request bounded, reviewable agent work that follows the controlling master plan.
+title: "[LMArena] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Plan-gated automated work
+        This form creates a bounded work order for an LMArena/LMarena coding agent. It does not
+        authorize a stage advance, schema change, benchmark, or merge by itself. The agent must
+        follow `AGENTS.md`, `docs/MASTER_PLAN.md`, and the current decision log.
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective and bounded deliverable
+      description: State the smallest useful outcome, affected module(s), and what is explicitly out of scope.
+      placeholder: |
+        Objective:
+        Affected files/modules:
+        Out of scope:
+    validations:
+      required: true
+
+  - type: textarea
+    id: plan_trace
+    attributes:
+      label: Master-plan and gate traceability
+      description: Cite exact `docs/MASTER_PLAN.md` section(s), the relevant phase/specification, and the current decision record.
+      placeholder: |
+        MASTER_PLAN sections:
+        Applicable phase/specification:
+        Current decision/gate:
+        Why this work is allowed at that gate:
+    validations:
+      required: true
+
+  - type: dropdown
+    id: stage_impact
+    attributes:
+      label: Stage impact
+      description: The agent verifies the live stage state from the decision log before acting.
+      options:
+        - No stage advance — maintenance, audit, test, or documentation
+        - Compatible correction within the current accepted stage
+        - Future-stage planning draft only — no implementation
+        - Proposed new-stage implementation — recorded gate approval is attached below
+        - Unsure — request a planning/maintainer review first
+    validations:
+      required: true
+
+  - type: textarea
+    id: contract
+    attributes:
+      label: Inputs, outputs, and acceptance evidence
+      description: Define the contract and measurable proof of completion. Include test, integration, edge-case, and performance expectations when relevant.
+      placeholder: |
+        Inputs:
+        Outputs:
+        Acceptance criteria:
+        Tests/measurements to run:
+        Known limitations to preserve or document:
+    validations:
+      required: true
+
+  - type: textarea
+    id: safety_rollback
+    attributes:
+      label: Data, security, cost, and rollback constraints
+      description: Identify data handling, viewer/network exposure, experiment cost, artifact compatibility, and how to back out the change.
+      placeholder: |
+        Data/privacy constraints:
+        Security/exposure constraints:
+        Expected compute or benchmark cost:
+        Compatibility and rollback path:
+    validations:
+      required: true
+
+  - type: textarea
+    id: authorization
+    attributes:
+      label: Required maintainer authorization or decision reference
+      description: Required for a phase advance, schema/specification change, golden regeneration, experiment, dependency change, or behavior/artifact compatibility change. Write “not needed” only for routine scoped maintenance.
+      placeholder: |
+        Decision record or explicit maintainer approval:
+        Files/records this approval permits the agent to change:
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      options:
+        - label: I understand the agent must stop rather than invent a missing gate, acceptance criterion, or research decision.
+          required: true
+        - label: I understand the agent must not add raw/personal video, secrets, or auto-merge/disable CI.
+          required: true
+        - label: I will review the resulting evidence and retain final merge and stage-decision authority.
+          required: true
