@@ -2,12 +2,20 @@
 
 Subcommands
 -----------
-process      batch-process a video file or synthetic scene into a frame store
-objects      Phase 2: extract intensity objects into a vie-objectstore/1 bundle
-self-test    deterministic synthetic end-to-end check incl. replay byte-equality
-benchmark    run the EXP-0001 quantization baseline benchmark
-validate     validate a config file, frame store, or object store
-serve        exploratory live viewer (NOT benchmark output)
+process           batch-process a video file or synthetic scene into a frame store
+objects           Phase 2: extract intensity objects into a vie-objectstore/1 bundle
+self-test         deterministic synthetic end-to-end check incl. replay byte-equality
+benchmark         run the EXP-0001 quantization baseline benchmark
+benchmark-objects Phase 2: run the EXP-0002 object-extraction benchmark
+validate          validate a config file, frame store, or object store
+serve             exploratory live viewer (NOT benchmark output)
+
+Argument validation happens at the argparse boundary, so a bad flag is a usage
+error (exit 2, no traceback) and never a crash inside the pipeline. Exit codes:
+0 success, 2 for every typed failure (CLI usage, ConfigError, SourceError, …).
+
+Security (plan §41, audit AUD-04): `serve` changes state only on POST requests
+carrying the dashboard's per-process token; GET requests cannot mutate the viewer.
 """
 
 from __future__ import annotations
@@ -36,6 +44,31 @@ if TYPE_CHECKING:  # typing-only imports; the CLI stays importable without numpy
 
 logger = logging.getLogger("vie.cli")
 
+MIN_LEVELS = 2
+MAX_LEVELS = 256
+
+
+def _bounded_int(flag: str, *, minimum: int, maximum: int | None = None):
+    """argparse `type=` for numeric flags: usage error instead of a traceback.
+
+    Every numeric argument is validated here (audit AUD-01/AUD-02) so a bad value
+    fails as an argparse usage error — nothing can reach the pipeline as an
+    unhandled `ValueError`.
+    """
+
+    def parse(text: str) -> int:
+        try:
+            value = int(text)
+        except ValueError:
+            raise argparse.ArgumentTypeError(f"{flag} must be an integer, got {text!r}") from None
+        if value < minimum:
+            raise argparse.ArgumentTypeError(f"{flag} must be >= {minimum}, got {value}")
+        if maximum is not None and value > maximum:
+            raise argparse.ArgumentTypeError(f"{flag} must be <= {maximum}, got {value}")
+        return value
+
+    return parse
+
 
 def _resolve_source(spec: str, *, config: PipelineConfig):
     """Input resolution: synthetic:<scene>, camera:<index>, or a file path."""
@@ -60,9 +93,19 @@ def _resolve_source(spec: str, *, config: PipelineConfig):
                 "camera batch processing requires an explicit stop condition: "
                 "pass --max-frames N (or use --input <file> for a finite source)"
             )
+        raw_index = spec.split(":", 1)[1].strip()
+        try:
+            index = int(raw_index)
+        except ValueError:
+            raise ConfigError(
+                f"invalid camera source {spec!r}: the device index must be an integer, "
+                f"e.g. --input camera:0 (got {raw_index!r})"
+            ) from None
+        if index < 0:
+            raise ConfigError(f"invalid camera source {spec!r}: the device index must be >= 0")
         from .input.video import CameraSource
 
-        return CameraSource(int(spec.split(":", 1)[1]), strict=config.strict)
+        return CameraSource(index, strict=config.strict)
     from .input.video import VideoFileSource
 
     return VideoFileSource(spec, max_frames=config.max_frames, strict=config.strict)
@@ -105,11 +148,13 @@ def cmd_process(args) -> int:
         raise ConfigError(f"output directory already exists (experiments never overwrite): {outdir}")
     from .pipeline import run_pipeline
 
-    result = run_pipeline(
-        source, config, outdir,
-        previews=args.previews,
-    )
-    source.close()
+    try:
+        result = run_pipeline(
+            source, config, outdir,
+            previews=args.previews,
+        )
+    finally:
+        source.close()  # capture handles are released even when a frame raises
     config.save(outdir / "config.json")
     metrics_path = outdir / "metrics.json"
     metrics_path.write_text(dumps_json(result.metrics), encoding="utf-8")
@@ -134,8 +179,10 @@ def cmd_objects(args) -> int:
     outdir = Path(args.output)
     if outdir.exists():
         raise ConfigError(f"output directory already exists (experiments never overwrite): {outdir}")
-    result = run_objects(source, config, objects_config, outdir, previews=args.previews)
-    source.close()
+    try:
+        result = run_objects(source, config, objects_config, outdir, previews=args.previews)
+    finally:
+        source.close()  # capture handles are released even when a frame raises
     config.save(outdir / "config.json")
     print(dumps_json({
         "outdir": str(outdir),
@@ -280,10 +327,58 @@ def np_histogram(maps: Sequence[IntensityMap]) -> np.ndarray:
 def cmd_benchmark(args) -> int:
     from .benchmarking.runner import main as bench_main
 
+    if args.warmup >= args.frames:
+        raise ConfigError(
+            f"benchmark needs at least one measured frame: --warmup {args.warmup} "
+            f"must be smaller than --frames {args.frames}"
+        )
     argv = ["--output", args.output, "--experiment-id", args.experiment_id,
             "--frames", str(args.frames), "--warmup", str(args.warmup),
             "--scene", args.scene, "--seed", str(args.seed)]
-    return bench_main(argv)
+    if args.overwrite:
+        argv.append("--overwrite")
+    rc = bench_main(argv)
+    print(dumps_json({
+        "experiment_id": args.experiment_id,
+        "outdir": args.output,
+        "result_json": str(Path(args.output) / "result.json"),
+        "overwritten": bool(args.overwrite),
+    }))
+    return rc
+
+
+def cmd_benchmark_objects(args) -> int:
+    """Phase 2 object-extraction benchmark (EXP-0002) as a first-class subcommand.
+
+    The runner is unchanged; this wires the documented `python -m
+    visual_intensity_engine.benchmarking.objects_runner` command into `vie` so the
+    recorded experiment is reproducible through one documented entry point
+    (audit AUD-08).
+    """
+    from .benchmarking.objects_runner import main as objects_bench_main
+
+    if args.warmup >= args.frames:
+        raise ConfigError(
+            f"benchmark needs at least one measured frame: --warmup {args.warmup} "
+            f"must be smaller than --frames {args.frames}"
+        )
+    argv = ["--output", args.output, "--experiment-id", args.experiment_id,
+            "--frames", str(args.frames), "--warmup", str(args.warmup),
+            "--levels", args.levels, "--resolutions", args.resolutions,
+            "--scenes", args.scenes, "--adversarial", args.adversarial,
+            "--seed", str(args.seed)]
+    for note in args.note or ():
+        argv += ["--note", note]
+    if args.overwrite:
+        argv.append("--overwrite")
+    rc = objects_bench_main(argv)
+    print(dumps_json({
+        "experiment_id": args.experiment_id,
+        "outdir": args.output,
+        "result_json": str(Path(args.output) / "result.json"),
+        "overwritten": bool(args.overwrite),
+    }))
+    return rc
 
 
 def cmd_validate(args) -> int:
@@ -361,15 +456,20 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=f"vie {__version__} ({STAGE})")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
+    levels_type = _bounded_int("--levels", minimum=MIN_LEVELS, maximum=MAX_LEVELS)
+    max_frames_type = _bounded_int("--max-frames", minimum=1)
+    previews_type = _bounded_int("--previews", minimum=0)
+
     p = sub.add_parser("process", help="batch-process a source into a frame store")
     p.add_argument("--input", required=True,
                    help="video file path | synthetic:<scene> | camera:<index>")
     p.add_argument("--config", help="config JSON (defaults to uniform L=16)")
-    p.add_argument("--levels", type=int, default=16)
+    p.add_argument("--levels", type=levels_type, default=16,
+                   help=f"quantization levels, {MIN_LEVELS}..{MAX_LEVELS} (default: 16)")
     p.add_argument("--seed", type=int, default=None)
-    p.add_argument("--max-frames", type=int, default=None)
+    p.add_argument("--max-frames", type=max_frames_type, default=None)
     p.add_argument("--lenient", action="store_true", help="record anomalies instead of failing (strict by default)")
-    p.add_argument("--previews", type=int, default=3, help="render N preview panels")
+    p.add_argument("--previews", type=previews_type, default=3, help="render N preview panels")
     p.add_argument("--output", required=True)
     p.set_defaults(func=cmd_process)
 
@@ -377,33 +477,58 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--input", required=True,
                    help="video file path | synthetic:<scene> | camera:<index>")
     p.add_argument("--config", help="pipeline config JSON (defaults to uniform L=16)")
-    p.add_argument("--levels", type=int, default=16)
+    p.add_argument("--levels", type=levels_type, default=16,
+                   help=f"quantization levels, {MIN_LEVELS}..{MAX_LEVELS} (default: 16)")
     p.add_argument("--seed", type=int, default=None)
-    p.add_argument("--max-frames", type=int, default=None)
+    p.add_argument("--max-frames", type=max_frames_type, default=None)
     p.add_argument("--lenient", action="store_true", help="record anomalies instead of failing")
-    p.add_argument("--min-area", type=int, default=1,
+    p.add_argument("--min-area", type=_bounded_int("--min-area", minimum=1), default=1,
                    help="discard objects smaller than N pixels; discards are counted and reported")
-    p.add_argument("--max-regions", type=int, default=None,
+    p.add_argument("--max-regions", type=_bounded_int("--max-regions", minimum=1), default=None,
                    help="fail the run if any frame exceeds N objects (never truncates)")
     p.add_argument("--objects-config", default=None,
                    help="vie.objects-config/1 JSON file (overrides --min-area/--max-regions)")
-    p.add_argument("--previews", type=int, default=3, help="render N object-overlay panels")
+    p.add_argument("--previews", type=previews_type, default=3, help="render N object-overlay panels")
     p.add_argument("--output", required=True)
     p.set_defaults(func=cmd_objects)
 
     p = sub.add_parser("self-test", help="deterministic synthetic end-to-end check")
-    p.add_argument("--levels", type=int, default=16)
+    p.add_argument("--levels", type=levels_type, default=16,
+                   help=f"quantization levels, {MIN_LEVELS}..{MAX_LEVELS} (default: 16)")
     p.add_argument("--output", default=None, help="optional path for the JSON report")
     p.set_defaults(func=cmd_self_test)
 
-    p = sub.add_parser("benchmark", help="run the quantization baseline benchmark")
+    overwrite_help = ("replace result.json/report.md in an existing non-empty --output "
+                      "directory (default: refuse — recorded experiments are append-only)")
+
+    p = sub.add_parser("benchmark", help="run the EXP-0001 quantization baseline benchmark")
     p.add_argument("--output", default="experiments/EXP-0001-quantization-baseline")
     p.add_argument("--experiment-id", default="EXP-0001")
-    p.add_argument("--frames", type=int, default=30)
-    p.add_argument("--warmup", type=int, default=8)
+    p.add_argument("--frames", type=_bounded_int("--frames", minimum=1), default=30)
+    p.add_argument("--warmup", type=_bounded_int("--warmup", minimum=0), default=8)
     p.add_argument("--scene", default="gradient")
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--overwrite", action="store_true", help=overwrite_help)
     p.set_defaults(func=cmd_benchmark)
+
+    p = sub.add_parser("benchmark-objects",
+                       help="run the EXP-0002 object-extraction benchmark (Phase 2)")
+    p.add_argument("--output", default="experiments/EXP-0002-object-extraction")
+    p.add_argument("--experiment-id", default="EXP-0002")
+    p.add_argument("--frames", type=_bounded_int("--frames", minimum=2), default=5,
+                   help="frames per condition (warm-up + measured)")
+    p.add_argument("--warmup", type=_bounded_int("--warmup", minimum=0), default=2)
+    p.add_argument("--levels", default="8,16,64,256", help="comma-separated level counts")
+    p.add_argument("--resolutions", default="320x240,640x480,1920x1080",
+                   help="comma-separated WxH conditions")
+    p.add_argument("--scenes", default="gradient,moving_square,ramp_bands,static",
+                   help="comma-separated synthetic scenes")
+    p.add_argument("--adversarial", default="320x240:1:3,640x480:1:3,1920x1080:2:3",
+                   help="widthxheight:min_area:frames list for the dense-noise block")
+    p.add_argument("--note", action="append", default=None, help="fact to record in report.md")
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--overwrite", action="store_true", help=overwrite_help)
+    p.set_defaults(func=cmd_benchmark_objects)
 
     p = sub.add_parser("validate", help="validate a config file, frame store, or object store")
     p.add_argument("--target", required=True)
@@ -413,7 +538,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--host", default="127.0.0.1",
                    help="bind address (default loopback; the viewer has no authentication, "
                         "so network exposure is an explicit opt-in, e.g. --host 0.0.0.0)")
-    p.add_argument("--port", type=int, default=8000)
+    p.add_argument("--port", type=_bounded_int("--port", minimum=0, maximum=65535), default=8000)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--allowed-host", action="append", default=None, metavar="NAME",
                    help="extra Host header name to accept (repeatable; for reverse proxies "

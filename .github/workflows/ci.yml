@@ -1,8 +1,9 @@
 name: CI
 
-# Gate for every push/PR: the 170-test Phase-1 acceptance suite (plus the 2026-09-18
-# audit hardening tests), lint, types, and a wheel-install smoke test that proves the
-# packaged schemas work outside a source checkout.
+# Gate for every push/PR: the whole test suite (Phase-1 acceptance, Phase-2 objects, and
+# the audit-hardening suites — CLI boundary validation, viewer Host/CSRF policy), lint,
+# types, and a wheel-install smoke test that proves the packaged schemas work outside a
+# source checkout. The suite grows every stage, so the header deliberately states no count.
 on:
   push:
     branches: ["main", "arena/**"]

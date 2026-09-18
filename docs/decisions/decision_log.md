@@ -192,3 +192,60 @@ history (plan §3.7, §37).
      remain valid.
 - Untouched: `docs/MASTER_PLAN.md`, `docs/hypotheses/registry.md`, VIE-SPEC-REP 1.0.0,
   `configs/`, golden hashes, EXP-0001 artifacts.
+
+## DEC-0006 — Execution-audit fixes (AUD-01…AUD-11), viewer CSRF rule, proprietary LICENSE
+
+- Date: 2026-09-18 · Status: **Accepted** (scope: engineering hygiene — no representation,
+  schema, vocabulary, or golden-hash change) · Evidence:
+  [`docs/reviews/2026-09-18-execution-audit-response.md`](../reviews/2026-09-18-execution-audit-response.md)
+- Context: an independent execution audit of commit `6be667d` (report filed on the still-open
+  PR #3, `arena/01a0b3da-…`, **not merged**) returned **PARTIAL** with no critical blocker and
+  eleven required fixes: CLI numeric-argument validation gaps (HIGH), unchecked `camera:`
+  index (MEDIUM), benchmark overwrite policy (MEDIUM), viewer state changes on unauthenticated
+  GET (MEDIUM), missing LICENSE (MEDIUM), dead code / no-op `except` / missing `finally`,
+  the objects benchmark reachable only via `python -m`, missing CLI-boundary tests, and a stale
+  CI header. The maintainer directed that the fixes be implemented here while PR #3 stays
+  unmerged.
+- Decisions:
+  1. **AUD-01/02 — validation happens at the CLI boundary.** Every numeric flag is parsed by a
+     range-checking `argparse` type (`--levels` ∈ [2,256], `--min-area` ≥ 1, `--max-regions`
+     ≥ 1, `--max-frames` ≥ 1, `--previews` ≥ 0, `--frames` ≥ 1, `--warmup` ≥ 0, `--port` ∈
+     [0,65535]) so a bad value is a usage error (exit 2, no traceback); `camera:<index>` is
+     parsed with a typed `ConfigError`; `--warmup ≥ --frames` is refused rather than measured.
+     Exit-code contract: 0 success, 2 for every typed failure.
+  2. **AUD-03 — recorded experiments are append-only everywhere.** `run_benchmark` (EXP-0001
+     and EXP-0002) refuses an existing non-empty output directory with `ConfigError`; a new
+     `--overwrite` flag is the explicit opt-in, logs a WARNING, and replaces only
+     `result.json`/`report.md` — nothing is deleted. This makes `vie benchmark` consistent with
+     `vie process`/`vie objects` and with `experiments/registry.json`.
+  3. **AUD-04 — the viewer no longer mutates on GET.** State changes require `POST /` carrying
+     a per-process `secrets.token_urlsafe(32)` token embedded in the dashboard's own forms;
+     token-less or wrongly-tokened POSTs are refused (403) with state untouched; request bodies
+     are bounded at 8 KiB; successful changes redirect (303, POST/redirect/GET) and are logged
+     as before. This is a CSRF control, **not** authentication — the viewer remains local,
+     unauthenticated, and exploratory. `build_viewer` (unused) is removed in the same change.
+  4. **AUD-05 — LICENSE added** (`Proprietary Research License`, matching the `pyproject.toml`
+     declaration): internal research/evaluation grant, redistribution by permission, commercial
+     use by licence, prohibited medical/security/surveillance/safety-critical fields, no
+     warranty; changes to it are decisions. Verified that the wheel now carries
+     `License-File: LICENSE` automatically (no packaging change needed).
+  5. **AUD-06…09 — dead/disconnected code resolved, not documented away.** Removed:
+     `pipeline.record_time`, the no-op `except (SourceError, VIEError): raise`,
+     `metrics.Timer`, `metrics.traced_memory`, `metrics.rss_kb`, `metrics.extend_history`,
+     `provenance.monotonic_ns`, `framesource.make_frame_record`, `server.build_viewer`.
+     `source.close()` moved into `finally` in `cmd_process`/`cmd_objects`. The EXP-0002 runner
+     is now reachable as `vie benchmark-objects` (the module entry point still works).
+  6. **AUD-10 — CLI/benchmark boundary tests added** (`tests/integration/test_cli_validation.py`,
+     25 cases, mock-free, subprocess-based) plus the viewer CSRF suite in
+     `tests/integration/test_viewer_server.py` (15 cases). Interactive-viewer tests now drive
+     POST forms exactly as a browser would.
+  7. **AUD-11 — stale phrasing refreshed.** The CI header no longer cites a test count (the
+     suite grows every stage); `SECURITY.md` states the current stage (Phase 2) and the licence.
+- Consequences: no representation semantics, schema id/version, vocabulary, config, or golden
+  hash changed; Phase-1/Phase-2 artifacts are byte-identical. The viewer is slightly less
+  convenient (buttons instead of links, no shareable `/?levels=32` URLs) and that cost is
+  accepted deliberately. Accepted/deferred rather than fixed: provenance commits referenced by
+  recorded experiments are absent from the squashed history (mapping is documented in
+  `DEC-0005`/the Phase-2 response); no LICENSE reachable from wheels was requested; viewer
+  threading/rate-limiting remains a declared limitation (SEC-2); camera success path remains
+  [UNVERIFIED] in this environment (PART-1).

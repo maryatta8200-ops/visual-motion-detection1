@@ -14,7 +14,6 @@ from typing import Protocol
 import numpy as np
 
 from ..errors import SourceError
-from ..provenance import utc_now_rfc3339
 
 
 @dataclass(frozen=True)
@@ -51,16 +50,4 @@ def check_timestamp_sequence(
     return warnings
 
 
-def make_frame_record(
-    data: np.ndarray, index: int, timestamp_us: int, *, source_frame_id: str | None = None, live: bool = False
-) -> FrameRecord:
-    return FrameRecord(
-        data=data,
-        frame_index=index,
-        source_frame_id=source_frame_id,
-        timestamp_us=int(timestamp_us),
-        wall_time_utc=utc_now_rfc3339() if live else None,
-    )
-
-
-__all__ = ["FrameRecord", "FrameSource", "SourceError", "check_timestamp_sequence", "make_frame_record"]
+__all__ = ["FrameRecord", "FrameSource", "SourceError", "check_timestamp_sequence"]

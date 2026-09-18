@@ -107,9 +107,13 @@ def run_benchmark(
     warmup: int = 6,
     scene: str = "gradient",
     seed: int = 0,
+    overwrite: bool = False,
 ) -> Path:
-    outdir = Path(outdir)
-    outdir.mkdir(parents=True, exist_ok=True)
+    from . import prepare_experiment_outdir
+
+    outdir = prepare_experiment_outdir(
+        outdir, experiment_id=experiment_id, overwrite=overwrite
+    )
     conditions = []
     for (w, h) in resolutions:
         for lv in levels:
@@ -230,6 +234,12 @@ def main(argv: list[str] | None = None) -> int:
         "Phase 1 quantization baseline: reference implementation latency, memory, representation size"
     ))
     parser.add_argument("--note", action="append", default=[], help="fact to record in report.md")
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="replace result.json/report.md in an existing non-empty --output directory "
+             "(refused by default: recorded experiments are append-only)",
+    )
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     levels = tuple(int(x) for x in args.levels.split(","))
@@ -247,6 +257,7 @@ def main(argv: list[str] | None = None) -> int:
         warmup=args.warmup,
         scene=args.scene,
         seed=args.seed,
+        overwrite=args.overwrite,
     )
     return 0
 

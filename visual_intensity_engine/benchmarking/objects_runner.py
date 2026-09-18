@@ -170,9 +170,13 @@ def run_benchmark(
     adversarial_specs=DEFAULT_ADVERSARIAL,
     notes: tuple[str, ...] = (),
     seed: int = 0,
+    overwrite: bool = False,
 ) -> Path:
-    outdir = Path(outdir)
-    outdir.mkdir(parents=True, exist_ok=True)
+    from . import prepare_experiment_outdir
+
+    outdir = prepare_experiment_outdir(
+        outdir, experiment_id=experiment_id, overwrite=overwrite
+    )
     conditions: list[dict] = []
     for (w, h) in resolutions:
         for scene in scenes:
@@ -374,6 +378,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--note", action="append", default=[], help="fact to record in report.md")
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="replace result.json/report.md in an existing non-empty --output directory "
+             "(refused by default: recorded experiments are append-only)",
+    )
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     run_benchmark(
@@ -390,6 +400,7 @@ def main(argv: list[str] | None = None) -> int:
         adversarial_specs=_parse_adversarial(args.adversarial),
         notes=tuple(args.note),
         seed=args.seed,
+        overwrite=args.overwrite,
     )
     return 0
 

@@ -2,22 +2,28 @@
 
 The viewer previously had only manual smoke coverage. These tests start the real
 `ThreadingHTTPServer` on an ephemeral loopback port and exercise the routes, the
-Host-header policy, the interaction log, and the MJPEG stream. They are
-integration tests only: the viewer remains excluded from benchmark output
-(plan §21) and no performance claim is derived from them.
+Host-header policy, the interaction log, the MJPEG stream, and the audit AUD-04
+CSRF rule: **no state change on GET** — parameters move only through `POST /`
+carrying the dashboard's per-process token. They are integration tests only: the
+viewer remains excluded from benchmark output (plan §21) and no performance claim
+is derived from them.
 """
 
 from __future__ import annotations
 
 import http.client
 import json
+import re
 import threading
+import urllib.parse
 
 import pytest
 
 from visual_intensity_engine.visualization.server import MJPEGServer, serve
 
 HOST_TIMEOUT_S = 10.0
+CSRF_PATTERN = re.compile(r'name="csrf" value="([^"]+)"')
+FORM_CONTENT_TYPE = "application/x-www-form-urlencoded"
 
 
 def _start(server: MJPEGServer) -> tuple[threading.Thread, str, int]:
@@ -50,6 +56,37 @@ def _get(port: int, path: str, *, host_header: str | None = None, timeout: float
         conn.close()
 
 
+def _post(port: int, fields: dict, *, path: str = "/", host_header: str | None = None,
+          timeout: float = HOST_TIMEOUT_S):
+    """POST a form body (the only mutation path) and return (status, headers, body)."""
+    conn = http.client.HTTPConnection("127.0.0.1", port, timeout=timeout)
+    headers = {"Content-Type": FORM_CONTENT_TYPE}
+    if host_header is not None:
+        headers["Host"] = host_header
+    try:
+        conn.request("POST", path, body=urllib.parse.urlencode(fields), headers=headers)
+        response = conn.getresponse()
+        return response.status, dict(response.getheaders()), response.read()
+    finally:
+        conn.close()
+
+
+def _session_token(port: int) -> str:
+    """The per-process token the dashboard embeds in its own POST forms."""
+    status, _, body = _get(port, "/")
+    assert status == 200
+    match = CSRF_PATTERN.search(body.decode("utf-8"))
+    assert match, "the dashboard must embed the session token in its parameter forms"
+    return match.group(1)
+
+
+def _log_entries(server) -> list[dict]:
+    path = server.state.log_path
+    if not path.exists():
+        return []
+    return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+
+
 def test_dashboard_serves_and_keeps_the_exploratory_warning(viewer):
     _, _, port = viewer
     status, headers, body = _get(port, "/")
@@ -58,6 +95,8 @@ def test_dashboard_serves_and_keeps_the_exploratory_warning(viewer):
     assert "EXPLORATORY VISUALIZATION — NOT BENCHMARK OUTPUT" in text
     assert headers["Content-Type"].startswith("text/html")
     assert "/stream.mjpg" in text and "/legend.png" in text
+    assert 'method="post"' in text, "parameter controls must be POST forms (AUD-04)"
+    assert "/?levels=" not in text, "no state-changing GET links may be rendered"
 
 
 def test_state_json_reports_mode_and_non_claim(viewer):
@@ -132,28 +171,83 @@ def test_network_bind_is_opt_in_and_reported(tmp_path, caplog):
     ), "exposing the viewer must be announced at WARNING"
 
 
-def test_query_parameters_update_state_and_are_logged(viewer):
-    _, _, port = viewer
-    log_path = viewer[0].state.log_path
-    assert _get(port, "/?levels=32&scene=gradient")[0] == 200
+def test_get_never_changes_state(viewer):
+    """AUD-04: the viewer mutates only on POST, so a link/prefetch cannot drive it."""
+    server, _, port = viewer
+    status, _, _ = _get(port, "/?levels=32&scene=gradient&fps=5")
+    assert status == 200, "a query string on GET must still render the dashboard"
+    state = json.loads(_get(port, "/state.json")[2])
+    assert (state["levels"], state["scene"], state["fps_target"]) == (16, "moving_square", 30.0)
+    assert _log_entries(server) == [], "an ignored GET must not write to the interaction log"
+
+
+def test_post_with_the_session_token_updates_state_and_is_logged(viewer):
+    server, _, port = viewer
+    token = _session_token(port)
+    status, headers, _ = _post(port, {"csrf": token, "levels": 32, "scene": "gradient"})
+    assert status == 303, "a successful change must redirect (POST/redirect/GET)"
+    assert headers["Location"] == "/"
     assert _get(port, "/state.json")[1].get("Cache-Control") == "no-store"
     state = json.loads(_get(port, "/state.json")[2])
     assert state["levels"] == 32 and state["scene"] == "gradient"
-    entries = [json.loads(line) for line in log_path.read_text().splitlines() if line.strip()]
+    entries = _log_entries(server)
     assert entries, "interaction log must record parameter changes"
     assert entries[-1]["changes"]["levels"]["to"] == 32
     assert entries[-1]["utc"].endswith("Z")
 
 
-def test_invalid_query_parameters_are_ignored_not_applied(viewer):
+def test_post_without_or_with_a_wrong_token_is_rejected(viewer):
+    """The token is per process and only the dashboard discloses it."""
+    server, _, port = viewer
+    token = _session_token(port)
+    assert len(token) >= 32
+    status, _, body = _post(port, {"levels": 64})
+    assert status == 403 and b"session token" in body
+    status, _, _ = _post(port, {"csrf": "not-the-token", "levels": 64})
+    assert status == 403
+    status, _, _ = _post(port, {"csrf": token[:-1], "levels": 64})
+    assert status == 403, "a truncated token must not be accepted"
+    state = json.loads(_get(port, "/state.json")[2])
+    assert state["levels"] == 16, "a rejected POST must leave state untouched"
+    assert _log_entries(server) == []
+
+
+def test_post_rejects_a_foreign_host_header(viewer):
+    """The Host policy applies to mutations exactly as it does to reads."""
+    server, _, port = viewer
+    token = _session_token(port)
+    status, _, body = _post(port, {"csrf": token, "levels": 64}, host_header="evil.example.com")
+    assert status == 403 and b"Host header rejected" in body
+    assert json.loads(_get(port, "/state.json")[2])["levels"] == 16
+
+
+def test_post_to_an_unknown_path_is_404(viewer):
+    _, _, port = viewer
+    token = _session_token(port)
+    status, _, _ = _post(port, {"csrf": token, "levels": 64}, path="/nope")
+    assert status == 404
+    assert json.loads(_get(port, "/state.json")[2])["levels"] == 16
+
+
+def test_invalid_post_values_are_ignored_not_applied(viewer):
     """Bad/out-of-range parameters must neither change state nor kill the connection."""
     _, _, port = viewer
-    status, _, _ = _get(port, "/?levels=999&scene=no_such_scene&fps=abc&fps=1e9")
-    assert status == 200, "an unparsable parameter must not break the response"
+    token = _session_token(port)
+    status, _, _ = _post(port, {"csrf": token, "levels": "999", "scene": "no_such_scene", "fps": "abc"})
+    assert status == 303, "an unparsable value must not break the response"
     state = json.loads(_get(port, "/state.json")[2])
     assert state["levels"] == 16  # untouched defaults
     assert state["scene"] == "moving_square"
     assert state["fps_target"] == 30.0
+
+
+def test_oversized_post_body_is_refused(viewer):
+    """Bounded request bodies: a state change is a handful of short fields."""
+    _, _, port = viewer
+    token = _session_token(port)
+    status, _, body = _post(port, {"csrf": token, "note": "x" * 9000})
+    assert status == 413
+    assert json.loads(_get(port, "/state.json")[2])["levels"] == 16
 
 
 def test_mjpeg_stream_sends_multipart_frames(viewer):

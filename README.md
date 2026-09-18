@@ -57,7 +57,13 @@ scripts/setup_env.sh                 # deterministic venv from requirements.txt
 # validate a store (frame store or object store) or a config
 .venv/bin/vie validate --target out/demo
 .venv/bin/vie validate --target out/objects
-.venv/bin/vie benchmark --output experiments/EXP-0001-quantization-baseline
+
+# benchmarks: recorded experiments are append-only, so a non-empty --output is refused.
+# Use a fresh directory for a repro run; --overwrite (deliberate, WARNING logged)
+# replaces only that experiment's result.json/report.md and deletes nothing.
+.venv/bin/vie benchmark --output out/bench-exp0001-repro --frames 30 --warmup 8
+.venv/bin/vie benchmark-objects --output out/bench-exp0002-repro
+.venv/bin/vie benchmark --output experiments/EXP-0001-quantization-baseline --overwrite
 
 # camera batch runs need an explicit stop condition (a live camera has no end-of-stream)
 .venv/bin/vie process --input camera:0 --max-frames 300 --output out/cam_store
@@ -65,6 +71,8 @@ scripts/setup_env.sh                 # deterministic venv from requirements.txt
 # exploratory live viewer (NOT benchmark output; interactions are logged)
 .venv/bin/vie serve --port 8000                      # loopback only (default)
 .venv/bin/vie serve --host 0.0.0.0 --allowed-host preview.example.test   # explicit exposure
+# the dashboard's parameter buttons POST a per-process token; plain GETs cannot
+# change the viewer (state changes are logged with UTC timestamps)
 ```
 
 ## Pipeline (Phase 1)

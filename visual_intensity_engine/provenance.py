@@ -11,7 +11,6 @@ import json
 import platform
 import subprocess
 import sys
-import time
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -113,7 +112,3 @@ def environment_summary() -> dict:
 def dumps_json(obj: dict) -> str:
     """Stable pretty JSON for reports (sorted keys, trailing newline)."""
     return json.dumps(obj, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
-
-
-def monotonic_ns() -> int:
-    return time.perf_counter_ns()

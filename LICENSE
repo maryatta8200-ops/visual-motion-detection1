@@ -1,0 +1,40 @@
+Proprietary Research License
+============================
+
+Copyright (c) 2026 DVIMR research project. All rights reserved.
+
+This repository is a stage-gated research prototype (see `SECURITY.md` and
+`docs/MASTER_PLAN.md`). It is published for research review and evaluation; it is
+**not** an open-source release and it is **not** a product.
+
+1. Grant. The copyright holder grants you a non-exclusive, non-transferable,
+   royalty-free licence to read, run, copy, and modify this software for
+   **internal research, evaluation, and teaching** purposes, including academic
+   work, provided that this notice and the copyright notice above are retained in
+   all copies and in any redistribution of the source.
+
+2. Redistribution. Redistribution of this software, in source or binary form, in
+   whole or in part, requires prior written permission from the copyright holder.
+   Publication of measurements, figures, or findings obtained by running the
+   software is permitted with attribution to this project.
+
+3. Commercial use. Commercial use, productisation, or incorporation into an
+   offered service requires a separate written licence from the copyright holder.
+
+4. Prohibited fields. This software must not be used for medical, security,
+   surveillance, or safety-critical purposes, and no result produced with it may
+   be presented as operational, clinical, or safety evidence (MASTER_PLAN §32,
+   §42; `SECURITY.md`).
+
+5. No warranty. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO
+   EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES,
+   OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+   ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.
+
+6. Changes. Any change to this licence is a project decision and must be recorded
+   in `docs/decisions/decision_log.md`.
+
+This licence text was written for this research prototype and is not legal
+advice; obtain legal review before relying on it commercially.

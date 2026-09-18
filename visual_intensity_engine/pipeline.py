@@ -136,34 +136,33 @@ def run_pipeline(
     if preview_dir is not None:
         preview_dir.mkdir(parents=True, exist_ok=True)
     n_seen = 0
-    try:
-        for record in source.frames():
-            t_start = time.perf_counter_ns()
-            pf = process_frame(record, config, vocabulary)
-            t_end = time.perf_counter_ns()
-            metrics.gray_ns.append(pf.gray_ns)
-            metrics.quantize_ns.append(pf.quantize_ns)
-            metrics.end_to_end_ns.append(t_end - t_start)
-            if record.warnings:
-                metrics.source_warnings += len(record.warnings)
-                warnings.extend(record.warnings)
-            writer.add(pf.imap)
-            if preview_dir is not None and n_seen < previews:
-                from .visualization.render import render_frame_panel
+    # SourceError/VIEError (and anything else) propagate unchanged: an aborted run
+    # never leaves a valid store behind.
+    for record in source.frames():
+        t_start = time.perf_counter_ns()
+        pf = process_frame(record, config, vocabulary)
+        t_end = time.perf_counter_ns()
+        metrics.gray_ns.append(pf.gray_ns)
+        metrics.quantize_ns.append(pf.quantize_ns)
+        metrics.end_to_end_ns.append(t_end - t_start)
+        if record.warnings:
+            metrics.source_warnings += len(record.warnings)
+            warnings.extend(record.warnings)
+        writer.add(pf.imap)
+        if preview_dir is not None and n_seen < previews:
+            from .visualization.render import render_frame_panel
 
-                render_frame_panel(
-                    record.data,
-                    pf.y,
-                    pf.imap.intensity,
-                    vocabulary,
-                    title=f"frame {record.frame_index}",
-                    out_path=preview_dir / f"preview_{n_seen:06d}.png",
-                )
-            if on_frame is not None:
-                on_frame(record.frame_index, record.data, pf.y, pf.imap.intensity)
-            n_seen += 1
-    except (SourceError, VIEError):
-        raise
+            render_frame_panel(
+                record.data,
+                pf.y,
+                pf.imap.intensity,
+                vocabulary,
+                title=f"frame {record.frame_index}",
+                out_path=preview_dir / f"preview_{n_seen:06d}.png",
+            )
+        if on_frame is not None:
+            on_frame(record.frame_index, record.data, pf.y, pf.imap.intensity)
+        n_seen += 1
 
     if config.max_frames is not None and n_seen < config.max_frames:
         msg = f"source ended early: {n_seen}/{config.max_frames} requested frames"
@@ -176,11 +175,6 @@ def run_pipeline(
     duration = manifest["provenance"]["duration_s"]
     logger.info("pipeline done: %d frame(s), %d warning(s), %.2fs", n_seen, len(warnings), duration)
     return PipelineResult(outdir=outdir, manifest=manifest, metrics=metrics.summary(), warnings=warnings)
-
-
-def record_time(record: FrameRecord) -> float:
-    """Placeholder hook (frame arrival time) — currently 0; keeps timing honest."""
-    return 0.0
 
 
 def module_info() -> dict:
