@@ -49,6 +49,74 @@
         "fully dense 1920x1080 noise at min_area=1 (~2.07M records) exceeded 3 GB and is recorded as not measured"
       ],
       "decision": "Phase 2 accepted (DEC-0004) on this evidence; optimization deferred to the profiling phase (plan 3.14/8), no rate claimed"
+    },
+    {
+      "experiment_id": "EXP-0003",
+      "title": "Phase-1 baseline re-measurement (untraced latency) for incremental Phase-2 cost comparison",
+      "research_questions": [
+        "Q2",
+        "Q7",
+        "Q8"
+      ],
+      "hypotheses": [],
+      "status": "completed",
+      "stage": "phase1",
+      "code_commit": "recorded-in-result.json",
+      "config": "same 18 conditions as EXP-0001 (L in {8,16,32,64,128,256} x {320x240,640x480,1920x1080}, gradient, 6 warm-up + 18 measured frames) measured with latency UNTRACED and the memory peak in a separate untimed pass",
+      "dataset_version": "synthetic://gradient (deterministic generator, see visual_intensity_engine/input/synthetic.py)",
+      "results_artifact": "experiments/EXP-0003-phase1-untraced/result.json",
+      "human_report": "experiments/EXP-0003-phase1-untraced/report.md",
+      "key_findings": [
+        "untraced Phase-1 e2e p50: 2.2-2.7 ms at 320x240, 9.5-10.1 ms at 640x480, 68.7-75.0 ms at 1920x1080",
+        "tracemalloc timing inflation for the Phase-1 stages is small (ratios ~1.0-1.2; up to 1.58x for the allocation-light quantization at 1080p), unlike the 1.36x-16x measured for object extraction",
+        "EXP-0001's conclusions (quantization ~L-independent; grayscale dominates) hold, but incremental-cost arithmetic must use EXP-0003 because EXP-0001 timed with tracing active"
+      ],
+      "decision": "supersedes EXP-0001 for latency comparisons only; EXP-0001 artifacts and its memory measurements remain as recorded"
+    },
+    {
+      "experiment_id": "EXP-0004",
+      "title": "min_area sensitivity on dense per-pixel noise (640x480, L=256)",
+      "research_questions": [
+        "Q4",
+        "Q7"
+      ],
+      "hypotheses": [],
+      "status": "completed",
+      "stage": "phase2",
+      "code_commit": "recorded-in-result.json",
+      "config": "static scene with every pixel randomized (noise_px=307200, L=256), min_area in {1,2,4,8,16}; identical frames across conditions, only the filter changes; 1 warm-up + 3 measured frames",
+      "dataset_version": "synthetic://static+noise_px (deterministic generator, seed 0)",
+      "results_artifact": "experiments/EXP-0004-min-area-sweep/result.json",
+      "human_report": "experiments/EXP-0004-min-area-sweep/report.md",
+      "key_findings": [
+        "kept regions per frame: 227,660 (min_area=1) -> 18,528 (2) -> 9,071 (4) -> 3,538 (8) -> 877 (16); all discards counted (dropped_regions/dropped_pixels)",
+        "extraction p50: 2338 ms (min_area=1) -> 229 (2) -> 125 (4) -> 74 (8) -> 49 ms (16); region-metadata bytes: 53.9 MB -> 4.5 -> 2.2 -> 0.9 -> 0.2 MB (58.5x -> 0.2x of raw RGB)",
+        "cost is dominated by kept-region bookkeeping, not frame size: record construction is 69.5% of extraction at min_area=1 but 11.4% at min_area=16",
+        "min_area is therefore a scientific lever on both noise policy and cost; the baseline remains min_area=1 for accuracy questions"
+      ],
+      "decision": "threshold sweep recorded; no default change (baseline stays min_area=1, drops always counted)"
+    },
+    {
+      "experiment_id": "EXP-0005",
+      "title": "Phase-2 stage split: labeling vs record construction (untraced latency)",
+      "research_questions": [
+        "Q4",
+        "Q8"
+      ],
+      "hypotheses": [],
+      "status": "completed",
+      "stage": "phase2",
+      "code_commit": "recorded-in-result.json",
+      "config": "gradient and ramp_bands scenes at 640x480 and 1920x1080, L in {16,64}, 2 warm-up + 5 measured frames; extraction timed as labeling (components + label map) plus record construction (records + fingerprints), both untraced",
+      "dataset_version": "synthetic://gradient,ramp_bands (deterministic generator, seed 0)",
+      "results_artifact": "experiments/EXP-0005-stage-split/result.json",
+      "human_report": "experiments/EXP-0005-stage-split/report.md",
+      "key_findings": [
+        "for structured scenes, labeling dominates extraction: 98-99.9% (e.g. 1920x1080 ramp_bands L=64: 2291 ms extract = 2279 labeling + 12 records)",
+        "record construction only dominates when enormous numbers of regions are kept (EXP-0004: 69.5% at 227,660 kept regions)",
+        "extraction totals cross-check against EXP-0002 within run-to-run variance on this 2-CPU host (ratios 0.97-1.18 for the 8 overlapping conditions)"
+      ],
+      "decision": "stage split instrumented by the runner (labeling_ns/records_ns) instead of inferred; totals remain comparable with EXP-0002"
     }
   ]
 }

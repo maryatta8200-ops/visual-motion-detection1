@@ -15,24 +15,25 @@ information at lower computational cost — decided by experiments, not assumpti
 > research question (Hypothesis registry), not current capability. Not for medical,
 > security, surveillance, or safety-critical use ([SECURITY.md](SECURITY.md)).
 
-**Status: Phase 2 accepted** (intensity objects, DEC-0004). Phase 0 (formal representation
-specification), Phase 1 (basic intensity engine) and Phase 2 (intensity objects) evidence are
-complete; motion / temporal linkage is the next stage and has not been started (it needs its
-own gate, plan §3.19).
+**Status: Phase 2 accepted** (intensity objects, DEC-0004; the Phase-2 contract was clarified
+editorially in `VIE-SPEC-REP` 1.1.1, DEC-0005). Phase 0 (formal representation specification),
+Phase 1 (basic intensity engine) and Phase 2 (intensity objects) evidence are complete; motion /
+temporal linkage is the next stage and has not been started (it needs its own gate, plan §3.19).
 
 | Document | Purpose |
 |---|---|
 | [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md) | Controlling research plan (§1–§43) |
 | [`docs/phase-0/representation_specification.md`](docs/phase-0/representation_specification.md) | `VIE-SPEC-REP` 1.0.0 — frozen formal representation spec |
-| [`docs/phase-2/representation_specification_1.1.0.md`](docs/phase-2/representation_specification_1.1.0.md) | `VIE-SPEC-REP` 1.1.0 — additive revision defining intensity objects |
+| [`docs/phase-2/representation_specification_1.1.1.md`](docs/phase-2/representation_specification_1.1.1.md) | `VIE-SPEC-REP` 1.1.1 — **current** Phase-2 object contract (1.1.0 + editorial clarifications; 1.1.0 is kept in the same directory for provenance) |
 | [`schemas/`](schemas/) | JSON Schemas (`vie.pipeline-config/1`, `vie.vocabulary/1`, `vie.framestore-manifest/1`, `vie.benchmark-result/1`, `vie.intensity-object/1`, `vie.region-set/1`, `vie.objects-config/1`, `vie.objectstore-manifest/1`, `vie.object-benchmark-result/1`); canonical copies ship inside the package, root files are symlinks |
 | [`docs/phase-1/phase1_report.md`](docs/phase-1/phase1_report.md) | Phase 1 stage report (acceptance evidence) |
 | [`docs/phase-2/phase2_report.md`](docs/phase-2/phase2_report.md) | Phase 2 stage report (acceptance evidence) |
-| [`docs/decisions/decision_log.md`](docs/decisions/decision_log.md) | Decision records (append-only; DEC-0000/0001 stage gates, DEC-0002 audit revision) |
-| [`docs/reviews/2026-09-18-external-audit-response.md`](docs/reviews/2026-09-18-external-audit-response.md) | Point-by-point external-audit verification and dispositions |
+| [`docs/decisions/decision_log.md`](docs/decisions/decision_log.md) | Decision records (append-only; DEC-0000/0001 stage gates, DEC-0002 audit revision, DEC-0003/0004 Phase-2 gates, DEC-0005 Phase-2 clarifications) |
+| [`docs/reviews/2026-09-18-external-audit-response.md`](docs/reviews/2026-09-18-external-audit-response.md) | Point-by-point dispositions of the first external audit (DEC-0002) |
+| [`docs/reviews/2026-09-18-phase2-audit-response.md`](docs/reviews/2026-09-18-phase2-audit-response.md) | Point-by-point dispositions of the Phase-2 design/readiness audit (DEC-0005) |
 | [`SECURITY.md`](SECURITY.md) · [`CONTRIBUTING.md`](CONTRIBUTING.md) | Exposure rules and contribution rules |
 | [`docs/hypotheses/registry.md`](docs/hypotheses/registry.md) | Versioned hypotheses H1–H5 |
-| [`experiments/registry.json`](experiments/registry.json) | Formal experiment registry (EXP-0001, EXP-0002) |
+| [`experiments/registry.json`](experiments/registry.json) | Formal experiment registry (EXP-0001 … EXP-0005, append-only) |
 
 ## Quickstart
 

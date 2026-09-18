@@ -87,7 +87,7 @@ def extract_objects(
 ) -> ExtractedFrame:
     """Label one quantized frame and build its deterministic object records."""
     result = label_level_uniform_regions(imap.intensity, vocabulary.levels, config)
-    return _to_extracted_frame(imap.frame.frame_index, result, vocabulary)
+    return build_extracted_frame(imap.frame.frame_index, result, vocabulary)
 
 
 def extract_label_map(
@@ -99,9 +99,11 @@ def extract_label_map(
     return label_level_uniform_regions(intensity, levels, config)
 
 
-def _to_extracted_frame(
+def build_extracted_frame(
     frame_index: int, result: LabelMapResult, vocabulary: IntensityVocabulary
 ) -> ExtractedFrame:
+    """Label->records conversion, exposed separately so the cost experiment can
+    time *labeling* and *record construction* independently (the Stage split)."""
     symbols = {tok.token_id: tok.symbol for tok in vocabulary.tokens}
     objects: list[ExtractedObject] = []
     for region_id, region in enumerate(result.regions):

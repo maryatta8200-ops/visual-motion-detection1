@@ -161,3 +161,34 @@ history (plan §3.7, §37).
   `configs/`, `experiments/EXP-0001/`.
 - Next stage (not started, requires its own gate): Phase 3 — temporal linkage / motion, which
   must define cross-frame identity explicitly and provisionally (plan §3.19).
+
+## DEC-0005 — Phase-2 contract clarifications (1.1.1) and three audit-triggered measurements
+
+- Date: 2026-09-18. Type: specification clarification + evidence. Status: **accepted**.
+- Context: an external Phase-2 design/readiness audit (CONDITIONAL PASS; dispositions in
+  [`docs/reviews/2026-09-18-phase2-audit-response.md`](../reviews/2026-09-18-phase2-audit-response.md))
+  asked for six items to be frozen before implementation. They were frozen by DEC-0003 and
+  implemented before the audit arrived; this decision records the clarifications the audit
+  legitimately surfaced and the measurements it triggered.
+- Decisions:
+  1. **VIE-SPEC-REP 1.1.1 adopted as the Phase-2 contract** — editorial clarifications only:
+     grouping-policy scope (R2.4), boundary handling / holes / merge-split (R3.5–R3.7),
+     zero-kept frames (R6.5), config identity (R5.5), complexity and measurement method (R11).
+     No semantic change, no artifact bytes change, every schema id and the §R9 example
+     unchanged; `representation_specification_1.1.0.md` is retained for provenance.
+  2. **Extension points are deferred explicitly, never silently absent:** 8-connectivity
+     (R2.2), composite multi-intensity grouping (plan §9 sequencing; future
+     `vie.objects-config/2` with an explicit `grouping` field), shape/topology fields
+     (R10.6), and hole descriptors. Each requires its own revision and decision.
+  3. **Measurement method:** latency is reported untraced everywhere; memory peaks come from
+     a separate untimed pass. EXP-0001 timed with `tracemalloc` active, so it is superseded
+     *for arithmetic* by EXP-0003 (same 18 conditions, untraced) — EXP-0001's artifacts stay
+     as recorded and the registry records both methods.
+  4. **EXP-0004** (min_area 1/2/4/8/16 on dense noise) and **EXP-0005** (labeling vs record
+     construction) are recorded; `min_area` is documented as both noise policy and cost
+     lever, with discards always counted.
+  5. **The only schema change is additive-optional**: `labeling_ns` / `records_ns` in
+     `vie.object-benchmark-result/1`; no schema id or version changed and existing documents
+     remain valid.
+- Untouched: `docs/MASTER_PLAN.md`, `docs/hypotheses/registry.md`, VIE-SPEC-REP 1.0.0,
+  `configs/`, golden hashes, EXP-0001 artifacts.

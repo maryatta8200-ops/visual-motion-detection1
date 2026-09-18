@@ -55,24 +55,26 @@ def test_objects_pipeline_writes_a_valid_store(tmp_path):
 
 
 def test_objects_pipeline_replay_is_byte_identical(tmp_path):
+    """Three independent runs must serialize identically (audit: run 1/2/3, plan §25)."""
     config = PipelineConfig.default(levels=8)
-    for name in ("a", "b"):
+    for name in ("a", "b", "c"):
         run_objects(
             SyntheticSource("gradient", (80, 48), 4, seed=5, levels=8),
             config,
             ObjectsConfig(min_area=3),
             tmp_path / name,
         )
-    assert (tmp_path / "a" / "region_labels.npz").read_bytes() == (
-        tmp_path / "b" / "region_labels.npz"
-    ).read_bytes()
-    assert (tmp_path / "a" / "regions.json").read_bytes() == (tmp_path / "b" / "regions.json").read_bytes()
-    ma = json.loads((tmp_path / "a" / "manifest.json").read_text())
-    mb = json.loads((tmp_path / "b" / "manifest.json").read_text())
-    for m in (ma, mb):
+    npz = [(tmp_path / n / "region_labels.npz").read_bytes() for n in ("a", "b", "c")]
+    regions = [(tmp_path / n / "regions.json").read_bytes() for n in ("a", "b", "c")]
+    assert npz[0] == npz[1] == npz[2]
+    assert regions[0] == regions[1] == regions[2]
+    manifests = []
+    for name in ("a", "b", "c"):
+        m = json.loads((tmp_path / name / "manifest.json").read_text())
         m["provenance"].pop("created_at_utc", None)
         m["provenance"].pop("duration_s", None)
-    assert ma == mb
+        manifests.append(m)
+    assert manifests[0] == manifests[1] == manifests[2]
 
 
 def test_min_area_discards_are_counted_and_reported(tmp_path):

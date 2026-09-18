@@ -10,9 +10,11 @@ excluded).
 
 Method (explicit, plan §36): grayscale + quantization are computed *outside* the
 timed region (they are EXP-0001's subject); each frame's extraction is timed with
-`time.perf_counter_ns`; the first `warmup` frames of each condition are excluded;
-`tracemalloc` records the transient peak of the extraction call. Single-threaded
-reference implementation; no optimization is claimed or attempted here (plan §3.14/§8).
+`time.perf_counter_ns` and split into **labeling** (connected components, label map)
+and **record construction** (`vie.intensity-object/1` records + fingerprints), both
+untraced; the first `warmup` frames of each condition are excluded; `tracemalloc`
+records the transient peak of the whole extraction call in a separate untimed pass.
+Single-threaded reference implementation; no optimization is claimed (plan §3.14/§8).
 """
 
 from __future__ import annotations
@@ -27,7 +29,7 @@ from ..config import PipelineConfig, canonical_json, schemas_dir, validate_again
 from ..input.synthetic import SyntheticSource
 from ..intensity.vocabulary import IntensityVocabulary
 from ..metrics import summarize
-from ..objects.extraction import extract_objects
+from ..objects.extraction import build_extracted_frame, extract_label_map, extract_objects
 from ..objects.objects_config import ObjectsConfig
 from ..pipeline import process_frame
 from ..provenance import capture_provenance, dumps_json, environment_summary
@@ -73,6 +75,8 @@ def measure_condition(
     prepared = [process_frame(record, config, vocabulary) for record in source.frames()]
 
     extract_ns: list[float] = []
+    labeling_ns: list[float] = []
+    records_ns: list[float] = []
     regions_per_frame: list[float] = []
     dropped_per_frame: list[float] = []
     peak_alloc = 0
@@ -82,12 +86,19 @@ def measure_condition(
     # Latency pass: untraced, because tracemalloc tracing inflates allocation-heavy
     # code by ~1.6x in this implementation (measured; see the report's method note).
     for i, pf in enumerate(prepared):
+        # Stage split: labeling and record construction are timed separately so the
+        # audit's "segmentation vs object construction" question is answerable; the
+        # total extraction time is their sum (same work, one extra call boundary).
         t0 = time.perf_counter_ns()
-        eframe = extract_objects(pf.imap, vocabulary, objects_config)
+        label_result = extract_label_map(pf.imap.intensity, vocabulary.levels, objects_config)
         t1 = time.perf_counter_ns()
+        eframe = build_extracted_frame(pf.imap.frame.frame_index, label_result, vocabulary)
+        t2 = time.perf_counter_ns()
         if i < warmup:
             continue
-        extract_ns.append(t1 - t0)
+        extract_ns.append(t2 - t0)
+        labeling_ns.append(t1 - t0)
+        records_ns.append(t2 - t1)
         regions_per_frame.append(float(eframe.region_count))
         dropped_per_frame.append(float(eframe.dropped_regions))
         raw_bytes = int(pf.imap.intensity.size * 3)  # uint8 RGB source frame
@@ -118,6 +129,8 @@ def measure_condition(
         "max_regions": max_regions,
         "noise_px": noise_px,
         "extraction_ns": summarize(extract_ns),
+        "labeling_ns": summarize(labeling_ns),
+        "records_ns": summarize(records_ns),
         "regions_per_frame": summarize(regions_per_frame),
         "dropped_per_frame": summarize(dropped_per_frame),
         "peak_alloc_bytes": int(peak_alloc),
@@ -147,6 +160,7 @@ def run_benchmark(
     outdir: Path | str,
     *,
     experiment_id: str = "EXP-0002",
+    title: str = "Phase 2 intensity-object extraction: cost of labeling, identity and metadata",
     resolutions=DEFAULT_RESOLUTIONS,
     levels=DEFAULT_LEVELS,
     scenes=DEFAULT_SCENES,
@@ -195,7 +209,7 @@ def run_benchmark(
     result = {
         "schema": "vie.object-benchmark-result/1",
         "experiment_id": experiment_id,
-        "title": "Phase 2 intensity-object extraction: cost of labeling, identity and metadata",
+        "title": title,
         "research_questions": ["Q4", "Q7", "Q8"],
         "hypotheses": [
             "H3 (indirect: representation size for objects is measured; accuracy unclaimed)",
@@ -213,8 +227,9 @@ def run_benchmark(
             ),
             "timer_resolution_note": (
                 "ns resolution, single-threaded; extraction only (grayscale+quantization "
-                "excluded, they are EXP-0001); region_metadata_json is the exact serialized "
-                "size of regions.json records per frame"
+                "excluded, they are EXP-0001), split into labeling_ns + records_ns; "
+                "region_metadata_json is the exact serialized size of regions.json records "
+                "per frame"
             ),
         },
         "environment": environment_summary(),
@@ -268,14 +283,17 @@ def render_report(result: dict, *, notes: tuple[str, ...] = ()) -> str:
         lines += [
             f"## Main matrix — {w}×{h}",
             "",
-            "| scene | L | extract p50 (ms) | p95 (ms) | regions/frame | dropped/frame | raw B | "
-            "intensity B | labels B | metadata B | metadata/raw | peak MB |",
-            "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+            "| scene | L | extract p50 (ms) | labeling p50 (ms) | records p50 (ms) | p95 (ms) | "
+            "regions/frame | dropped/frame | raw B | intensity B | labels B | metadata B | "
+            "metadata/raw | peak MB |",
+            "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
         ]
         for cond in sorted(conds, key=lambda c: (c["scene"], c["levels"])):
             b = cond["bytes_per_frame"]
             lines.append(
                 f"| {cond['scene']} | {cond['levels']} | {_ms(cond['extraction_ns']['p50'])} | "
+                f"{_ms(cond['labeling_ns']['p50']) if 'labeling_ns' in cond else '—'} | "
+                f"{_ms(cond['records_ns']['p50']) if 'records_ns' in cond else '—'} | "
                 f"{_ms(cond['extraction_ns']['p95'])} | {cond['regions_per_frame']['p50']:.0f} | "
                 f"{cond['dropped_per_frame']['p50']:.0f} | {b['raw_rgb']} | {b['intensity_u8']} | "
                 f"{b['labels_i32']} | {b['region_metadata_json']} | "
@@ -340,6 +358,11 @@ def _parse_adversarial(text: str) -> tuple[tuple[int, int, int, int], ...]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="vie-objects-benchmark", description=__doc__)
     parser.add_argument("--output", default="experiments/EXP-0002-object-extraction")
+    parser.add_argument("--experiment-id", default="EXP-0002")
+    parser.add_argument(
+        "--title",
+        default="Phase 2 intensity-object extraction: cost of labeling, identity and metadata",
+    )
     parser.add_argument("--frames", type=int, default=5)
     parser.add_argument("--warmup", type=int, default=2)
     parser.add_argument("--levels", default="8,16,64,256")
@@ -355,6 +378,8 @@ def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     run_benchmark(
         args.output,
+        experiment_id=args.experiment_id,
+        title=args.title,
         levels=tuple(int(x) for x in args.levels.split(",")),
         resolutions=tuple(
             tuple(int(v) for v in item.lower().split("x")) for item in args.resolutions.split(",")

@@ -1,7 +1,7 @@
 # Phase 2 report — Intensity objects
 
 - Stage: Phase 2 (**Intensity Objects**), plan §33 / [`phase2_plan.md`](phase2_plan.md)
-- Specification: [`VIE-SPEC-REP 1.1.0`](representation_specification_1.1.0.md) (additive revision of 1.0.0)
+- Specification: [`VIE-SPEC-REP 1.1.1`](representation_specification_1.1.1.md) (current; 1.1.0 plus editorial clarifications, DEC-0005 — no semantic change)
 - Gates: DEC-0003 (spec + plan accepted) → this report → DEC-0004 (acceptance)
 - Code: commits `1ef690f` (implementation) and `a86b70a` (EXP-0002 runner correction); implementation recorded in
   `experiments/EXP-0002-object-extraction/result.json` as `code_commit = a86b70a`
@@ -93,6 +93,8 @@ notes.
 
 - **Performance is deliberately un-optimized** (plan §3.14/§8). The run-heavy case above is
   the clearest target for the profiling phase; nothing here claims a rate or a bound.
+- **Research-question framing**: Phase 2 builds the representation H2 needs; it does not
+  test H1 or H2 (no accuracy claim is made anywhere in this report).
 - **Cross-frame identity is out of scope** (Phase 3). `fingerprint` is a content signature
   only; the spec says so in §R3.4 and the report repeats it so it cannot be misread.
 - **Memory envelope on this machine** (3 GB) bounds the measured adversarial envelope; the
